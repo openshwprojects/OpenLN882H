@@ -18,7 +18,7 @@ typedef enum
     WIFI_MGR_EVENT_STA_CONNECTED         = 1, /**<  STA connected target AP */
     WIFI_MGR_EVENT_STA_DISCONNECTED      = 2, /**<  STA disconnected target AP */
     WIFI_MGR_EVENT_STA_SCAN_COMPLETE     = 3, /**<  STA scan complete */
-    WIFI_MGR_EVENT_STA_CONNECT_FAILED    = 4, /**<  STA connect torget AP failed */
+    WIFI_MGR_EVENT_STA_CONNECT_FAILED    = 4, /**<  STA connect target AP failed */
 
     WIFI_MGR_EVENT_SOFTAP_STARTUP        = 5, /**<  softAP startup */
     WIFI_MGR_EVENT_SOFTAP_ASSOCIATED     = 6, /**<  a station connected to softAP */

@@ -69,6 +69,27 @@
 #endif
 
 
+/***********************FLASH OTP PARAMTER AREA***************************************/
+#define FLASH_OTP_FREQ_OFFSET_POS  0
+#define FLASH_OTP_FREQ_OFFSET_LEN  1
+
+#define FLASH_OTP_TX_POWER_B_POS   1
+#define FLASH_OTP_TX_POWER_B_LEN   1
+
+#define FLASH_OTP_TX_POWER_GN_POS  2
+#define FLASH_OTP_TX_POWER_GN_LEN  1
+
+#define FLASH_OTP_TX_POWER_BGN_POS 3
+#define FLASH_OTP_TX_POWER_BGN_LEN 1
+
+#define FLASH_OTP_PARAM_FLAG_POS   4
+#define FLASH_OTP_PARAM_FLAG_LEN   1
+#define FLASH_OTP_VAL_VAILD        0x01
+
+#define FLASH_OTP_MAC_POS          0x100
+#define FLASH_OTP_MAC_LEN          6
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -116,6 +137,9 @@ int    ln_nvds_get_tx_power_b_comp(uint8_t *val);
 
 int    ln_nvds_set_tx_power_gn_comp(uint8_t  val);
 int    ln_nvds_get_tx_power_gn_comp(uint8_t *val);
+
+/*********************FLASH OPT API***********************************************/
+int    ln_fotp_get_mac_val(uint8_t *val);
 
 #ifdef __cplusplus
 }

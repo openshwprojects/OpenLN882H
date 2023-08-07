@@ -170,6 +170,56 @@ int ln_nvds_read(uint32_t offset, uint8_t* data, uint16_t len)
     return ret;
 }
 
+/* ---------------------------- flash otp param  --------------------------------------- */
+/* flash OTP param flag */
+static int ln_fotp_get_param_flag(uint8_t *val)
+{
+    hal_flash_security_area_read(FLASH_OTP_PARAM_FLAG_POS,FLASH_OTP_PARAM_FLAG_LEN,val);
+    return NVDS_ERR_OK;
+}
+
+static int ln_fotp_param_is_valid(void)
+{
+    uint8_t flag = 0;
+    ln_fotp_get_param_flag(&flag);
+    return (flag == FLASH_OTP_VAL_VAILD);
+}
+
+/* flash OTP param  xtal_comp */
+static int ln_fotp_get_xtal_comp_val(uint8_t *val)
+{
+    hal_flash_security_area_read(FLASH_OTP_FREQ_OFFSET_POS,FLASH_OTP_FREQ_OFFSET_LEN,val);
+    return NVDS_ERR_OK;
+}
+
+/* flash OTP param  tx_power_b_comp */
+static int ln_fotp_get_tx_power_b_comp_val(uint8_t *val)
+{
+    hal_flash_security_area_read(FLASH_OTP_TX_POWER_B_POS,FLASH_OTP_TX_POWER_B_LEN,val);
+    return NVDS_ERR_OK;
+}
+
+/* flash OTP param  tx_power_gn_comp */
+static int ln_fotp_get_tx_power_gn_comp_val(uint8_t *val)
+{
+    hal_flash_security_area_read(FLASH_OTP_TX_POWER_GN_POS,FLASH_OTP_TX_POWER_GN_LEN,val);
+    return NVDS_ERR_OK;
+}
+
+/* flash OTP param  tx_power_bgn_comp */
+static int ln_fotp_get_tx_power_bgn_comp_val(uint8_t *val)
+{
+    hal_flash_security_area_read(FLASH_OTP_TX_POWER_BGN_POS,FLASH_OTP_TX_POWER_BGN_LEN,val);
+    return NVDS_ERR_OK;
+}
+
+/* flash OTP param  MAC addr */
+int ln_fotp_get_mac_val(uint8_t *val)
+{
+    hal_flash_security_area_read(FLASH_OTP_MAC_POS,FLASH_OTP_MAC_LEN,val);
+    return NVDS_ERR_OK;
+}
+
 
 /* ---------------------------- nvds public api --------------------------------------- */
 int ln_nvds_init(uint32_t base) {
@@ -220,7 +270,10 @@ int ln_nvds_set_xtal_comp_val(uint8_t  val) {
 }
 
 int ln_nvds_get_xtal_comp_val(uint8_t *val) {
-    return ln_nvds_read(NV2_XTAL_COMP_VAL_OFFST, val, NV2_XTAL_COMP_VAL_LEN);
+    if(ln_fotp_param_is_valid())
+        return ln_fotp_get_xtal_comp_val(val);
+    else
+        return ln_nvds_read(NV2_XTAL_COMP_VAL_OFFST, val, NV2_XTAL_COMP_VAL_LEN);
 }
 
 /* NV3_TX_POWER_COMP_OFFST, NV3_TX_POWER_COMP_LEN */
@@ -236,7 +289,11 @@ int ln_nvds_set_tx_power_comp(uint8_t  val) {
 }
 
 int ln_nvds_get_tx_power_comp(uint8_t *val) {
-    return ln_nvds_read(NV3_TX_POWER_COMP_OFFST, val, NV3_TX_POWER_COMP_LEN);
+    if(ln_fotp_param_is_valid()){
+        ln_fotp_get_tx_power_bgn_comp_val(val);
+    }
+    else
+        return ln_nvds_read(NV3_TX_POWER_COMP_OFFST, val, NV3_TX_POWER_COMP_LEN);
 }
 
 /* NV4_CHIP_SN_OFFSET, NV4_CHIP_SN_LEN */
@@ -334,7 +391,14 @@ int ln_nvds_set_ate_result(uint8_t  val) {
 }
 
 int ln_nvds_get_ate_result(uint8_t *val) {
-    return ln_nvds_read(NV9_ATE_RESULT_OFFSET, val, NV9_ATE_RESULT_LEN);
+    if(ln_fotp_param_is_valid()){
+        *val = NV9_ATE_RESULT_OK;
+        return NVDS_ERR_OK;
+    }  
+    else{
+        return ln_nvds_read(NV9_ATE_RESULT_OFFSET, val, NV9_ATE_RESULT_LEN);
+    }
+    
 }
 
 /* NV10_TX_POWER_COMP_B_OFFST, NV10_TX_POWER_COMP_B_LEN */
@@ -350,7 +414,10 @@ int ln_nvds_set_tx_power_b_comp(uint8_t  val) {
 }
 
 int ln_nvds_get_tx_power_b_comp(uint8_t *val) {
-    return ln_nvds_read(NV10_TX_POWER_COMP_B_OFFST, val, NV10_TX_POWER_COMP_B_LEN);
+    if(ln_fotp_param_is_valid())
+        return ln_fotp_get_tx_power_b_comp_val(val);
+    else
+        return ln_nvds_read(NV10_TX_POWER_COMP_B_OFFST, val, NV10_TX_POWER_COMP_B_LEN);
 }
 
 /* NV11_TX_POWER_COMP_GN_OFFST, NV11_TX_POWER_COMP_GN_LEN */
@@ -366,5 +433,8 @@ int ln_nvds_set_tx_power_gn_comp(uint8_t  val) {
 }
 
 int ln_nvds_get_tx_power_gn_comp(uint8_t *val) {
-    return ln_nvds_read(NV11_TX_POWER_COMP_GN_OFFST, val, NV11_TX_POWER_COMP_GN_LEN);
+    if(ln_fotp_param_is_valid())
+        return ln_fotp_get_tx_power_gn_comp_val(val);
+    else
+        return ln_nvds_read(NV11_TX_POWER_COMP_GN_OFFST, val, NV11_TX_POWER_COMP_GN_LEN);
 }

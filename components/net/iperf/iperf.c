@@ -150,6 +150,7 @@ __exit:
     if(buffer){
         OS_Free(buffer);
     }
+    param.mode = IPERF_MODE_STOP;
     OS_SemaphoreDelete(&param.kill_signal);
     OS_ThreadDelete(&param.iperf_thr);
 }
@@ -246,6 +247,7 @@ static void iperf_udp_server(void *thread_param)
 
 __exit:
     IPERF_PRINTF("Disconnected, iperf udp server shut down!\r\n");
+    param.mode = IPERF_MODE_STOP;
     OS_SemaphoreDelete(&param.kill_signal);
     OS_ThreadDelete(&param.iperf_thr);
 }
@@ -375,6 +377,7 @@ static void iperf_client(void *thread_param)
 
     OS_Free(iperf_tx_buffer);
     IPERF_PRINTF("Disconnected, iperf tcp client shut down!\r\n");
+    param.mode = IPERF_MODE_STOP;
     OS_SemaphoreDelete(&param.kill_signal);
     OS_ThreadDelete(&param.iperf_thr);
 }
@@ -466,6 +469,7 @@ static void iperf_client(void *thread_param)
     if(send_buf){
         OS_Free(send_buf);
     }
+    param.mode = IPERF_MODE_STOP;
     OS_SemaphoreDelete(&param.kill_signal);
     OS_ThreadDelete(&param.iperf_thr);
 }
@@ -574,6 +578,7 @@ void iperf_server(void *thread_param)
 __exit:
     if (sock >= 0) closesocket(sock);
     if (recv_data) OS_Free(recv_data);
+    param.mode = IPERF_MODE_STOP;
     OS_SemaphoreDelete(&param.kill_signal);
     OS_ThreadDelete(&param.iperf_thr);
 }
@@ -664,7 +669,6 @@ int iperf(char *args)
     else if (strcmp(argv[index], "--stop") == 0) {
         /* stop iperf */
         mode = param.mode;
-        param.mode = IPERF_MODE_STOP;
         if(mode != IPERF_MODE_STOP){
             OS_SemaphoreRelease(&param.kill_signal);
         }

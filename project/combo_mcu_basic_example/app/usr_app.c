@@ -106,7 +106,7 @@ static void wifi_init_sta(void)
     // ln_generate_random_mac(mac_addr);
     //1. sta mac get
      if (SYSPARAM_ERR_NONE != sysparam_sta_mac_get(mac_addr)) {
-        LOG(LOG_LVL_ERROR, "[%s]sta mac get filed!!!\r\n", __func__);
+        LOG(LOG_LVL_ERROR, "[%s]sta mac get failed!!!\r\n", __func__);
         return;
     }
 
