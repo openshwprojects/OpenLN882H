@@ -574,6 +574,12 @@ void ln_at_preparser(char ch)
             LN_AT_PARSER_BUSY_SET();
             ln_at_parser_notify();
         }
+    } else if ((ch & 0x80) != 0) { /* possibly another character encoding */
+        if (_server->echo)
+        {
+            transfer->putc(ch);
+        }
+        _server->in_buff[_server->index++] = ch;
     }
 
     prev_ch = ch;

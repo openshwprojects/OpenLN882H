@@ -26,8 +26,13 @@
   #define LN_AT_LOG_E(...)
 #endif /* LN_AT_PARSER_BUILD_LIB */
 
-#define LN_AT_PARSER_LOG_D(fmt, ...)   //LN_AT_LOG_D(fmt"\r\n", ##__VA_ARGS__)
-#define LN_AT_PARSER_LOG_E(fmt, ...)   //LN_AT_LOG_E(fmt"\r\n", ##__VA_ARGS__)
+#ifdef LN_AT_DEBUG_ENABLE
+#define LN_AT_PARSER_LOG_D(fmt, ...)   LN_AT_LOG_D(fmt"\r\n", ##__VA_ARGS__)
+#define LN_AT_PARSER_LOG_E(fmt, ...)   LN_AT_LOG_E(fmt"\r\n", ##__VA_ARGS__)
+#else
+#define LN_AT_PARSER_LOG_D(fmt, ...)
+#define LN_AT_PARSER_LOG_E(fmt, ...)
+#endif
 
 #ifndef LN_AT_MAX_PARA_NUM
 #define LN_AT_MAX_PARA_NUM 20

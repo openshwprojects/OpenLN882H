@@ -25,7 +25,7 @@
 
 /* lightning at parser version information */
 #define LN_AT_VERSION     1L  /**< major version number  */
-#define LN_AT_SUBVERSION  0L  /**< minor version number  */
+#define LN_AT_SUBVERSION  1L  /**< minor version number  */
 #define LN_AT_REVISION    0L  /**< revise version number */
 
 /**

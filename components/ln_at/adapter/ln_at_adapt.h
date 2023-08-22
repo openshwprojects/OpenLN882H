@@ -21,7 +21,7 @@
 
 #ifdef LN_AT_DEBUG_ENABLE
   /* Debug */
-  #define LN_AT_LOG_D(...)    //LOG(LOG_LVL_DEBUG, ##__VA_ARGS__)
+  #define LN_AT_LOG_D(...)    LOG(LOG_LVL_DEBUG, ##__VA_ARGS__)
   #define LN_AT_LOG_I(...)    LOG(LOG_LVL_INFO,  ##__VA_ARGS__)
   #define LN_AT_LOG_E(...)    LOG(LOG_LVL_ERROR, ##__VA_ARGS__)
   #define LN_AT_LOG_HEX(string, buff, size)
