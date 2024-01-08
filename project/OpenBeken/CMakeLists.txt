@@ -105,23 +105,23 @@ set(PROJ_ALL_SRC
 #    app/src/i2c/drv_i2c_main.c
 #    app/src/i2c/drv_i2c_mcp23017.c
 #    app/src/i2c/drv_i2c_tc74.c
-#    app/src/jsmn/jsmn.c
+    app/src/jsmn/jsmn.c
 #    app/src/littlefs/lfs_util.c
 #    app/src/littlefs/lfs.c
 #    app/src/littlefs/our_lfs.c
-#    app/src/logging/logging.c
+    app/src/logging/logging.c
 #    app/src/memory/memtest.c
-#    app/src/mqtt/new_mqtt_deduper.c
-#    app/src/mqtt/new_mqtt.c
-#    app/src/new_cfg.c
-#    app/src/new_common.c
-#    app/src/new_ping.c
-#    app/src/new_pins.c
+    app/src/mqtt/new_mqtt_deduper.c
+    app/src/mqtt/new_mqtt.c
+    app/src/new_cfg.c
+    app/src/new_common.c
+    app/src/new_ping.c
+    app/src/new_pins.c
 #    app/src/ota/ota.c
-#    app/src/rgb2hsv.c
+    app/src/rgb2hsv.c
 #    app/src/sim/sim_uart.c
-#    app/src/tiny_crc8.c
-#    app/src/user_main.c
+    app/src/tiny_crc8.c
+    app/src/user_main.c
     main.c
     usr_app.c
     bsp/serial_hw.c

@@ -183,22 +183,28 @@ void wifi_init_ap(void)
 }
 
 
+void Main_Init();
+void Main_OnEverySecond();
+
 void usr_app_task_entry(void *params)
 {
     LN_UNUSED(params);
 
     wifi_manager_init();
 
-    wifi_init_sta();
-    // wifi_init_ap();
+   // wifi_init_sta();
+    wifi_init_ap();
+	
+	Main_Init();
 
-    while (!netdev_got_ip()) {
-        OS_MsDelay(1000);
-    }
+    //while (!netdev_got_ip()) {
+    //    OS_MsDelay(1000);
+    //}
     
     while(1)
     {
         OS_MsDelay(1000);
+		Main_OnEverySecond();
     }
 }
 
