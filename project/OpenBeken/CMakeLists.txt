@@ -83,13 +83,13 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_uart.c
 #    app/src/driver/drv_ucs1912.c
 #    app/src/driver/drv_wemo.c
-#    app/src/hal/ln822h/hal_adc_bk7231.c
-#    app/src/hal/ln822h/hal_flashConfig_bk7231.c
-#    app/src/hal/ln822h/hal_flashVars_bk7231.c
-#    app/src/hal/ln822h/hal_generic_bk7231.c
-#    app/src/hal/ln822h/hal_main_bk7231.c
-#    app/src/hal/ln822h/hal_pins_bk7231.c
-#    app/src/hal/ln822h/hal_wifi_bk7231.c
+    app/src/hal/ln882h/hal_flashConfig_ln882h.c
+    app/src/hal/ln882h/hal_adc_ln882h.c
+    app/src/hal/ln882h/hal_flashVars_ln882h.c
+    app/src/hal/ln882h/hal_generic_ln882h.c
+    app/src/hal/ln882h/hal_main_ln882h.c
+    app/src/hal/ln882h/hal_pins_ln882h.c
+    app/src/hal/ln882h/hal_wifi_ln882h.c
     app/src/httpserver/hass.c
     app/src/httpserver/http_basic_auth.c
     app/src/httpserver/http_fns.c
@@ -105,23 +105,23 @@ set(PROJ_ALL_SRC
 #    app/src/i2c/drv_i2c_main.c
 #    app/src/i2c/drv_i2c_mcp23017.c
 #    app/src/i2c/drv_i2c_tc74.c
-#    app/src/jsmn/jsmn.c
+    app/src/jsmn/jsmn.c
 #    app/src/littlefs/lfs_util.c
 #    app/src/littlefs/lfs.c
 #    app/src/littlefs/our_lfs.c
-#    app/src/logging/logging.c
+    app/src/logging/logging.c
 #    app/src/memory/memtest.c
-#    app/src/mqtt/new_mqtt_deduper.c
-#    app/src/mqtt/new_mqtt.c
-#    app/src/new_cfg.c
-#    app/src/new_common.c
-#    app/src/new_ping.c
-#    app/src/new_pins.c
+    app/src/mqtt/new_mqtt_deduper.c
+    app/src/mqtt/new_mqtt.c
+    app/src/new_cfg.c
+    app/src/new_common.c
+    app/src/new_ping.c
+    app/src/new_pins.c
 #    app/src/ota/ota.c
-#    app/src/rgb2hsv.c
+    app/src/rgb2hsv.c
 #    app/src/sim/sim_uart.c
-#    app/src/tiny_crc8.c
-#    app/src/user_main.c
+    app/src/tiny_crc8.c
+    app/src/user_main.c
     main.c
     usr_app.c
     bsp/serial_hw.c
