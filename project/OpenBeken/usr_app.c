@@ -185,6 +185,7 @@ void wifi_init_ap(void)
 
 
 void Main_Init();
+void Main_OnEverySecond();
 
 void usr_app_task_entry(void *params)
 {
@@ -204,6 +205,7 @@ void usr_app_task_entry(void *params)
     while(1)
     {
         OS_MsDelay(1000);
+		Main_OnEverySecond();
     }
 }
 
