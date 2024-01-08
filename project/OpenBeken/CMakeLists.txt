@@ -15,7 +15,7 @@ set(PROJ_ALL_SRC
     app/src/cmnds/cmd_newLEDDriver.c
     app/src/cmnds/cmd_repeatingEvents.c
     app/src/cmnds/cmd_script.c
-    app/src/cmnds/cmd_send.c
+#    app/src/cmnds/cmd_send.c
     app/src/cmnds/cmd_simulatorOnly.c
     app/src/cmnds/cmd_tasmota.c
     app/src/cmnds/cmd_tcp.c
