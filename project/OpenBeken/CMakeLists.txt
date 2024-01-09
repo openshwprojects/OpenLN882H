@@ -83,13 +83,13 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_uart.c
 #    app/src/driver/drv_ucs1912.c
 #    app/src/driver/drv_wemo.c
-    app/src/hal/ln822h/hal_adc_ln882h.c
-#    app/src/hal/ln822h/hal_flashConfig_ln882h.c
-    app/src/hal/ln822h/hal_flashVars_ln882h.c
-    app/src/hal/ln822h/hal_generic_ln882h.c
-#    app/src/hal/ln822h/hal_main_ln882h.c
-#    app/src/hal/ln822h/hal_pins_ln882h.c
-#    app/src/hal/ln822h/hal_wifi_ln882h.c
+    app/src/hal/ln882h/hal_adc_ln882h.c
+    app/src/hal/ln882h/hal_flashConfig_ln882h.c
+    app/src/hal/ln882h/hal_flashVars_ln882h.c
+    app/src/hal/ln882h/hal_generic_ln882h.c
+    app/src/hal/ln882h/hal_main_ln882h.c
+    app/src/hal/ln882h/hal_pins_ln882h.c
+    app/src/hal/ln882h/hal_wifi_ln882h.c
     app/src/httpserver/hass.c
     app/src/httpserver/http_basic_auth.c
     app/src/httpserver/http_fns.c
