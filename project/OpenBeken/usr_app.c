@@ -197,9 +197,9 @@ void usr_app_task_entry(void *params)
 	
 	Main_Init();
 
-    //while (!netdev_got_ip()) {
-    //    OS_MsDelay(1000);
-    //}
+    while (!netdev_got_ip()) {
+        OS_MsDelay(1000);
+    }
     
     while(1)
     {
