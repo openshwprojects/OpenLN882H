@@ -127,7 +127,7 @@ set(PROJ_ALL_SRC
     bsp/serial_hw.c
     startup/startup_${CHIP_SERIAL}_gcc.c
     ${MODULE_SRC}
-    ${LN_SDK_ROOT}/components/net/lwip-2.1.3/src/apps/mqtt/mqtt.c
+	${COMP_LWIP_DIR}/apps/mqtt/mqtt.c
 )
 
 set(COMP_DHCPD_SUPPORT          ON  PARENT_SCOPE)
