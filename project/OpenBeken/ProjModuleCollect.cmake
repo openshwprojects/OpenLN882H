@@ -62,6 +62,16 @@ file(GLOB_RECURSE  NVDS_SRC  ${COMP_NVDS_DIR}/*.c)
 include_directories(${COMP_NVDS_DIR})
 list(APPEND MODULE_SRC ${NVDS_SRC})
 
+###################################  httpclient ################################
+file(GLOB_RECURSE  PARTMGR_SRC  ${COMP_PARTMGR_DIR}/*.c)
+include_directories(${COMP_PARTMGR_DIR})
+list(APPEND MODULE_SRC ${PARTMGR_SRC})
+
+###################################  fota   ################################
+file(GLOB_RECURSE  FOTA_SRC  ${COMP_FOTA_DIR}/ota_agent/*.c)
+include_directories(${COMP_FOTA_DIR}/ota_agent)
+list(APPEND MODULE_SRC ${FOTA_SRC})
+
 ###################################  utils  ####################################
 set(UTILS_SRC
     ${COMP_UTILS_DIR}/debug/CmBacktrace/cm_backtrace.c
