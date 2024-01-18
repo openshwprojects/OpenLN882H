@@ -14,6 +14,8 @@
 #include "ln_at.h"
 #include "ln_utils.h"
 #include "flash_partition_table.h"
+#include "ota_port.h"
+
 
 
 int main (int argc, char* argv[])
@@ -62,6 +64,10 @@ int main (int argc, char* argv[])
 
     //Init lwip stack.
     lwip_tcpip_init();
+	
+    if ( OTA_ERR_NONE != ota_port_init()) {
+        LOG(LOG_LVL_ERROR, "ota port failed!\r\n");
+    }
 
     //Creat usr app task.
     creat_usr_app_task();
