@@ -1,5 +1,5 @@
 {
-    "Warning1":"警告，系统定义用户不可修改!!!",
+    "Warning1":"Warning, system definitions cannot be modified by users!!!",
     "vendor_define":
     [
         {"partition_type": "BOOT",        "start_addr": "0x00000000",  "size_KB": 24  },
@@ -7,7 +7,7 @@
     ],
 
 
-    "Warning2":"以下数据,用户根据SOC flash容量以及具体需求修改，仅可以修改start_addr值和size值，且必须4KB对齐!!!",
+    "Warning2":"The following data can be modified by the user according to the SOC flash capacity and specific needs. Only the start_addr value and size value can be modified, and must be aligned to 4KB!!!",
     "user_define":
     [
         {"partition_type": "APP",         "start_addr": "0x00007000",  "size_KB": 1200 },
