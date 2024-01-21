@@ -16,6 +16,7 @@
 #include "ln_misc.h"
 #include "ln882h.h"
 #include "usr_app.h"
+#include "app/src/hal/hal_adc.h"
 
 #define PM_DEFAULT_SLEEP_MODE             (ACTIVE)
 #define PM_WIFI_DEFAULT_PS_MODE           (WIFI_NO_POWERSAVE)
@@ -42,20 +43,47 @@ void usr_app_task_entry(void *params)
     LN_UNUSED(params);
 
     wifi_manager_init();
-
-    // wifi_init_sta();
-    // wifi_init_ap();
-	
 	Main_Init();
-/*
-    while (!netdev_got_ip()) {
-        OS_MsDelay(1000);
-    }
- */   
+  
     while(1)
     {
         OS_MsDelay(1000);
 		Main_OnEverySecond();
+    }
+}
+
+void temp_cal_app_task_entry(void *params)
+{
+    LN_UNUSED(params);
+    uint8_t cnt = 0;
+    int8_t cap_comp = 0;
+    uint16_t adc_val = 0;
+    int16_t curr_adc = 0;
+
+    if (NVDS_ERR_OK == ln_nvds_get_xtal_comp_val((uint8_t *)&cap_comp)) {
+        if ((uint8_t)cap_comp == 0xFF) {
+            cap_comp = 0;
+        }
+    }
+
+    HAL_ADC_Init(0);
+
+    wifi_temp_cal_init(HAL_ADC_Read(ADC_CH0), cap_comp);
+
+    while (1)
+    {
+        OS_MsDelay(1000);
+
+        adc_val = HAL_ADC_Read(ADC_CH0);
+        wifi_do_temp_cal_period(adc_val);
+
+        curr_adc = (adc_val & 0xFFF);
+
+        cnt++;
+        if ((cnt % 10) == 0) {
+            LOG(LOG_LVL_INFO, "TEMP: adc raw: %4d, temp_IC: %4d Total:%d; Free:%ld;\r\n",
+                    curr_adc, (int16_t)(25 + (curr_adc - 770) / 2.54f), OS_HeapSizeGet(), OS_GetFreeHeapSize());
+        }
     }
 }
 
@@ -84,6 +112,13 @@ void creat_usr_app_task(void)
     if(OS_OK != OS_ThreadCreate(&g_usr_app_thread, "UsrAPP", usr_app_task_entry, NULL, OS_PRIORITY_BELOW_NORMAL, USR_APP_TASK_STACK_SIZE)) {
         LN_ASSERT(1);
     }
+
+#if  WIFI_TEMP_CALIBRATE
+    if(OS_OK != OS_ThreadCreate(&g_temp_cal_thread, "TempAPP", temp_cal_app_task_entry, NULL, OS_PRIORITY_BELOW_NORMAL, TEMP_APP_TASK_STACK_SIZE)) {
+        LN_ASSERT(1);
+    }
+#endif
+    
 
     /* print sdk version */
     {
