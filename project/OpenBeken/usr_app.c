@@ -34,6 +34,7 @@ static OS_Thread_t g_usr_app_thread;
 /* declaration */
 static void usr_app_task_entry(void *params);
 static void temp_cal_app_task_entry(void *params);
+float g_wifi_temperature = 0.0f;
 
 void Main_Init();
 void Main_OnEverySecond();
@@ -81,8 +82,9 @@ void temp_cal_app_task_entry(void *params)
 
         cnt++;
         if ((cnt % 10) == 0) {
+            g_wifi_temperature = (25 + (curr_adc - 770) / 2.54f);
             LOG(LOG_LVL_INFO, "TEMP: adc raw: %4d, temp_IC: %4d Total:%d; Free:%ld;\r\n",
-                    curr_adc, (int16_t)(25 + (curr_adc - 770) / 2.54f), OS_HeapSizeGet(), OS_GetFreeHeapSize());
+                    curr_adc, (int16_t)g_wifi_temperature, OS_HeapSizeGet(), OS_GetFreeHeapSize());
         }
     }
 }
