@@ -98,7 +98,7 @@ void creat_usr_app_task(void)
          * CLK_G_EFUSE: For wifi temp calibration
          * CLK_G_BLE  CLK_G_I2S  CLK_G_WS2811  CLK_G_DBGH  CLK_G_SDIO  CLK_G_EFUSE  CLK_G_AES
         */
-        ln_pm_always_clk_disable_select(CLK_G_I2S | CLK_G_WS2811 | CLK_G_SDIO | CLK_G_AES);
+        ln_pm_always_clk_disable_select(CLK_G_BLE | CLK_G_I2S | CLK_G_WS2811 | CLK_G_SDIO | CLK_G_AES);
 
         /**
          * ADC0: For wifi temp calibration
