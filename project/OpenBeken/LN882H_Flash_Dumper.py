@@ -32,9 +32,9 @@ def read_flash(filename, arg_port, flash_size, is_otp = False):
         print('complete.')
 
 if __name__ == '__main__':
-        print ('LN882H flash dump tool v1.0')
+        print ('LN882H flash dump tool v1.1')
         if len(sys.argv) < 3:
-                print('Usage: python dumpflash.py port filename <length>')
+                print('Usage: python LN882H_Flash_Dumper.py port filename <length>')
                 print('       port: e.g. COM6')
                 print('       filename: any simple name e.g. test')
                 print('                 otp_ and flash_ files will be created as:')
@@ -42,8 +42,8 @@ if __name__ == '__main__':
                 print('                 flash_filename.bin')
                 print('       length: optional: the amount of flash to dump. This MUST be a hex value.')
                 print('               e.g. 0x00040000 (256 KB)')
-                print('               If length is omitted, it will default to 0x200000')
-                print('               OTP is fixed size and will always dump 1KB')
+                print('               If length is omitted, it will default to 0x200000.')
+                print('               OTP is fixed size and will always dump 1KB.')
                 print('')
                 os._exit(0)
 
