@@ -42,7 +42,7 @@ if __name__ == '__main__':
                 print('                 flash_filename.bin')
                 print('       length: optional: the amount of flash to dump. This MUST be a hex value.')
                 print('               e.g. 0x00040000 (256 KB)')
-                print('               If length is omited dumping will continue until 0xFFFFFFFF or an error occurs')
+                print('               If length is omitted, it will default to 0x200000')
                 print('               OTP is fixed size and will always dump 1KB')
                 print('')
                 os._exit(0)
@@ -52,8 +52,13 @@ if __name__ == '__main__':
         if (len(sys.argv) > 3):
             flash_size = int(sys.argv[3], 16)
         else:
-            flash_size = 0xFFFFFFFF
+            flash_size = 0x200000
+            print('No length argument supplied, defaulting to: ' + hex(flash_size))
         flash_addr = 0x00000000
+
+        if not os.path.exists('LN882H_CMD_Tool.exe'):
+            print('Error: LN882H_CMD_Tool.exe not found.')
+            os._exit(1)
 
         # load RAMCode so that we can access flash
         print('Loading RAMCode...')
