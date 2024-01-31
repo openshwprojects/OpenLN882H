@@ -27,7 +27,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_adcButton.c
 #    app/src/driver/drv_adcSmoother.c
 #    app/src/driver/drv_battery.c
-#    app/src/driver/drv_bl_shared.c
+    app/src/driver/drv_bl_shared.c
     app/src/driver/drv_bl0937.c
 #    app/src/driver/drv_bl0942.c
 #    app/src/driver/drv_bmp280.c
