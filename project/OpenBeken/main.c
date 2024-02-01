@@ -42,7 +42,7 @@ int main (int argc, char* argv[])
     }
 
     cm_backtrace_init("wifi_mcu_basic_example", "HW_V1.0", "SW_V1.0");
-    LOG(LOG_LVL_INFO, "------  wifi_mcu_basic_example  ------\r\n");
+    LOG(LOG_LVL_INFO, "------  Welcome to OpenBeken for the LN882H  ------\r\n");
 
     if (NVDS_ERR_OK != ln_nvds_init(NVDS_SPACE_OFFSET)) {
         LOG(LOG_LVL_ERROR, "NVDS init filed!\r\n");
