@@ -27,8 +27,8 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_adcButton.c
 #    app/src/driver/drv_adcSmoother.c
 #    app/src/driver/drv_battery.c
-#    app/src/driver/drv_bl_shared.c
-#    app/src/driver/drv_bl0937.c
+    app/src/driver/drv_bl_shared.c
+    app/src/driver/drv_bl0937.c
 #    app/src/driver/drv_bl0942.c
 #    app/src/driver/drv_bmp280.c
 #    app/src/driver/drv_bp1658cj.c
@@ -48,7 +48,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_hue.c
 #    app/src/driver/drv_kp18058.c
 #    app/src/driver/drv_kp18068.c
-#    app/src/driver/drv_main.c
+    app/src/driver/drv_main.c
 #    app/src/driver/drv_max72xx_clock.c
 #    app/src/driver/drv_max72xx_internal.c
 #    app/src/driver/drv_max72xx_single.c
