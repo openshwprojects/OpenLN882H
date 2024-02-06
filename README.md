@@ -1,3 +1,7 @@
+# LN882H SDK used for OpenBeken port for LN882H -> OpenLN882H
+
+See: https://github.com/openshwprojects/OpenBK7231T_App
+
 # LN882H SDK 简介
 
 # 编译方式
