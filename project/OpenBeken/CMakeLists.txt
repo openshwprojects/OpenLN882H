@@ -54,11 +54,11 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_max72xx_single.c
 #    app/src/driver/drv_mcp9808.c
 #    app/src/driver/drv_ntp_events.c
-#    app/src/driver/drv_ntp.c
+    app/src/driver/drv_ntp.c
 #    app/src/driver/drv_pt6523.c
 #    app/src/driver/drv_pwm_groups.c
 #    app/src/driver/drv_pwmToggler.c
-#    app/src/driver/drv_pwrCal.c
+    app/src/driver/drv_pwrCal.c
 #    app/src/driver/drv_rn8209.c
 #    app/src/driver/drv_sgp.c
 #    app/src/driver/drv_shiftRegister.c
@@ -72,7 +72,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_spi.c
 #    app/src/driver/drv_spidma.c
 #    app/src/driver/drv_ssdp.c
-#    app/src/driver/drv_tasmotaDeviceGroups.c
+    app/src/driver/drv_tasmotaDeviceGroups.c
 #    app/src/driver/drv_test_drivers.c
 #    app/src/driver/drv_textScroller.c
 #    app/src/driver/drv_tm_gn_display_shared.c
