@@ -32,7 +32,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_bl0942.c
 #    app/src/driver/drv_bmp280.c
 #    app/src/driver/drv_bp1658cj.c
-#    app/src/driver/drv_bp5758d.c
+    app/src/driver/drv_bp5758d.c
 #    app/src/driver/drv_bridge_driver.c
 #    app/src/driver/drv_chargingLimit.c
 #    app/src/driver/drv_cht8305.c
