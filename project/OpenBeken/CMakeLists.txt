@@ -66,7 +66,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_sm16703P.c
     app/src/driver/drv_sm2135.c
     app/src/driver/drv_sm2235.c
-#    app/src/driver/drv_soft_i2c.c
+    app/src/driver/drv_soft_i2c.c
 #    app/src/driver/drv_soft_spi.c
 #    app/src/driver/drv_spi_flash.c
 #    app/src/driver/drv_spi.c
