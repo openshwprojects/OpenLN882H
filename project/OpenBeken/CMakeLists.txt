@@ -31,7 +31,7 @@ set(PROJ_ALL_SRC
     app/src/driver/drv_bl0937.c
 #    app/src/driver/drv_bl0942.c
 #    app/src/driver/drv_bmp280.c
-#    app/src/driver/drv_bp1658cj.c
+    app/src/driver/drv_bp1658cj.c
     app/src/driver/drv_bp5758d.c
 #    app/src/driver/drv_bridge_driver.c
 #    app/src/driver/drv_chargingLimit.c
@@ -45,7 +45,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_gn6932.c
 #    app/src/driver/drv_ht16k33.c
 #    app/src/driver/drv_httpButtons.c
-#    app/src/driver/drv_hue.c
+    app/src/driver/drv_hue.c
 #    app/src/driver/drv_kp18058.c
 #    app/src/driver/drv_kp18068.c
     app/src/driver/drv_main.c
@@ -56,16 +56,16 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_ntp_events.c
     app/src/driver/drv_ntp.c
 #    app/src/driver/drv_pt6523.c
-#    app/src/driver/drv_pwm_groups.c
-#    app/src/driver/drv_pwmToggler.c
+    app/src/driver/drv_pwm_groups.c
+    app/src/driver/drv_pwmToggler.c
     app/src/driver/drv_pwrCal.c
 #    app/src/driver/drv_rn8209.c
 #    app/src/driver/drv_sgp.c
 #    app/src/driver/drv_shiftRegister.c
 #    app/src/driver/drv_sht3x.c
 #    app/src/driver/drv_sm16703P.c
-#    app/src/driver/drv_sm2135.c
-#    app/src/driver/drv_sm2235.c
+    app/src/driver/drv_sm2135.c
+    app/src/driver/drv_sm2235.c
 #    app/src/driver/drv_soft_i2c.c
 #    app/src/driver/drv_soft_spi.c
 #    app/src/driver/drv_spi_flash.c
@@ -82,7 +82,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_tuyaMCUSensor.c
 #    app/src/driver/drv_uart.c
 #    app/src/driver/drv_ucs1912.c
-#    app/src/driver/drv_wemo.c
+    app/src/driver/drv_wemo.c
     app/src/hal/ln882h/hal_adc_ln882h.c
     app/src/hal/ln882h/hal_flashConfig_ln882h.c
     app/src/hal/ln882h/hal_flashVars_ln882h.c
