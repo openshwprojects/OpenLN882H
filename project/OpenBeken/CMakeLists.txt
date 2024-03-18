@@ -46,8 +46,8 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_ht16k33.c
 #    app/src/driver/drv_httpButtons.c
     app/src/driver/drv_hue.c
-#    app/src/driver/drv_kp18058.c
-#    app/src/driver/drv_kp18068.c
+    app/src/driver/drv_kp18058.c
+    app/src/driver/drv_kp18068.c
     app/src/driver/drv_main.c
 #    app/src/driver/drv_max72xx_clock.c
 #    app/src/driver/drv_max72xx_internal.c
