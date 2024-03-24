@@ -22,7 +22,7 @@
 #define PM_WIFI_DEFAULT_PS_MODE           (WIFI_NO_POWERSAVE)
 #define WIFI_TEMP_CALIBRATE               (1)
 
-#define USR_APP_TASK_STACK_SIZE           (6*256) //Byte
+#define USR_APP_TASK_STACK_SIZE           (8*256) //Byte
 
 #if WIFI_TEMP_CALIBRATE
 static OS_Thread_t g_temp_cal_thread;
