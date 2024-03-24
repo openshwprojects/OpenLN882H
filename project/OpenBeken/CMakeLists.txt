@@ -2,6 +2,9 @@ include(ProjModuleCollect.cmake)
 
 add_compile_definitions(PLATFORM_LN882H=1)
 
+
+add_definitions( -DUSER_SW_VER="LN882H_$(APP_VERSION)" )
+
 set(PROJ_ALL_SRC
     app/src/base64/base64.c
     app/src/bitmessage/bitmessage_read.c
