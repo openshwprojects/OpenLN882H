@@ -1152,7 +1152,10 @@ mqtt_publish(mqtt_client_t *client, const char *topic, const void *payload, u16_
   }
 
   mqtt_append_request(&client->pend_req_queue, r);
-  mqtt_output_send(&client->output, client->conn);
+  // Fix from:
+  // https://github.com/openshwprojects/OpenBL602/commit/c73dcaab7e73ab68b29bd20a3b5d4c0992902c1d
+  // Do not do this now, let the thread do it
+  //mqtt_output_send(&client->output, client->conn);
   return ERR_OK;
 }
 
@@ -1220,7 +1223,11 @@ mqtt_sub_unsub(mqtt_client_t *client, const char *topic, u8_t qos, mqtt_request_
   }
 
   mqtt_append_request(&client->pend_req_queue, r);
-  mqtt_output_send(&client->output, client->conn);
+  
+  // Fix from:
+  // https://github.com/openshwprojects/OpenBL602/commit/c73dcaab7e73ab68b29bd20a3b5d4c0992902c1d
+  // Do not do this now, let the thread do it
+  // mqtt_output_send(&client->output, client->conn);
   return ERR_OK;
 }
 
