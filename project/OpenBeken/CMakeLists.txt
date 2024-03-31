@@ -42,8 +42,8 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_cse7766.c
 #    app/src/driver/drv_ddp.c
 #    app/src/driver/drv_debouncer.c
-#    app/src/driver/drv_dht_internal.c
-#    app/src/driver/drv_dht.c
+    app/src/driver/drv_dht_internal.c
+    app/src/driver/drv_dht.c
 #    app/src/driver/drv_doorSensorWithDeepSleep.c
 #    app/src/driver/drv_gn6932.c
 #    app/src/driver/drv_ht16k33.c
