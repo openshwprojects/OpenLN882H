@@ -122,7 +122,7 @@ static void netif_low_level_input_callback(uint8_t *data, uint16_t len) {
 
 static err_t ethernetif_init(struct netif *netif, netif_idx_t nif_idx)
 {
-    static char *sta_hostname    = NULL;
+    static char sta_hostname[64] = {0};
     static char *softap_hostname = NULL;
 
     LWIP_ASSERT("netif != NULL", (netif != NULL));
