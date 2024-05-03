@@ -109,9 +109,9 @@ set(PROJ_ALL_SRC
 #    app/src/i2c/drv_i2c_mcp23017.c
 #    app/src/i2c/drv_i2c_tc74.c
     app/src/jsmn/jsmn.c
-#    app/src/littlefs/lfs_util.c
-#    app/src/littlefs/lfs.c
-#    app/src/littlefs/our_lfs.c
+    app/src/littlefs/lfs_util.c
+    app/src/littlefs/lfs.c
+    app/src/littlefs/our_lfs.c
     app/src/logging/logging.c
 #    app/src/memory/memtest.c
     app/src/mqtt/new_mqtt_deduper.c
