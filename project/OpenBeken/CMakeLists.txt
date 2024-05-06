@@ -78,9 +78,9 @@ set(PROJ_ALL_SRC
     app/src/driver/drv_tasmotaDeviceGroups.c
 #    app/src/driver/drv_test_drivers.c
 #    app/src/driver/drv_textScroller.c
-#    app/src/driver/drv_tm_gn_display_shared.c
-#    app/src/driver/drv_tm1637.c
-#    app/src/driver/drv_tm1638.c
+    app/src/driver/drv_tm_gn_display_shared.c
+    app/src/driver/drv_tm1637.c
+    app/src/driver/drv_tm1638.c
 #    app/src/driver/drv_tuyaMCU.c
 #    app/src/driver/drv_tuyaMCUSensor.c
 #    app/src/driver/drv_uart.c
