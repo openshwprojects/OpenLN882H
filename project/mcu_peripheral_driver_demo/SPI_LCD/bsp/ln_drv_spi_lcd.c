@@ -10,7 +10,7 @@
  */
 
 /**
-        SPI LCD驱动说明：
+        SPI LCD驱动说明（ST7789S驱动IC）：
         
         1. 接线说明：
                         LN8210              LCD
@@ -199,8 +199,8 @@ void spi_lcd_init(void)
     //************* Start Initial Sequence **********//
     spi_lcd_write_cmd(0x11); //Sleep out
     ln_delay_ms(120);        //Delay 120ms
-                             //************* Start Initial Sequence **********//
-                             //------------------------------display and color format setting--------------------------------//
+    //************* Start Initial Sequence **********//
+    //------------------------------display and color format setting--------------------------------//
 
     spi_lcd_write_cmd(0X36); // Memory Access Control
     if (USE_HORIZONTAL == 0)

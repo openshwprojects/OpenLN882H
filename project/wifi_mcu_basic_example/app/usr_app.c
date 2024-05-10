@@ -16,6 +16,7 @@
 #include "ln_wifi_err.h"
 #include "ln_misc.h"
 #include "ln882h.h"
+#include "hal/hal_flash.h"
 #include "usr_app.h"
 
 #define PM_DEFAULT_SLEEP_MODE             (ACTIVE)
@@ -25,6 +26,12 @@
 #define WIFI_USER_USE_WPA3                (1) /* 0: Not use; 1: Use */
 
 #define USR_APP_TASK_STACK_SIZE           (6*256) //Byte
+
+#if (LWIP_DHCP == 0)
+    #define LOCAL_STATIC_IP_ADDR "192.168.1.123"
+    #define LOCAL_STATIC_GW_ADDR "192.168.1.1"
+    #define LOCAL_STATIC_NM_ADDR "255.255.255.0"
+#endif
 
 #if WIFI_TEMP_CALIBRATE
 static OS_Thread_t g_temp_cal_thread;
@@ -41,7 +48,10 @@ static void temp_cal_app_task_entry(void *params);
 
 static uint8_t mac_addr[6]        = {0x00, 0x50, 0xC2, 0x5E, 0x88, 0x99};
 static uint8_t psk_value[40]      = {0x0};
-// static uint8_t target_ap_bssid[6] = {0xC0, 0xA5, 0xDD, 0x84, 0x6F, 0xA8};
+
+#define DEFAULT_SSID_PREFIX   "LN_WiFi-"
+char g_softap_ssid[SSID_MAX_LEN]    = DEFAULT_SSID_PREFIX;
+char g_softap_pwd[PASSWORD_MAX_LEN] = "12345678";
 
 wifi_sta_connect_t connect = {
     .ssid    = "A_Murphy",
@@ -57,8 +67,8 @@ wifi_scan_cfg_t scan_cfg = {
 };
 
 wifi_softap_cfg_t ap_cfg = {
-    .ssid            = "LN_AP_8899",
-    .pwd             = "12345678",
+    .ssid            = g_softap_ssid,
+    .pwd             = g_softap_pwd,
     .bssid           = mac_addr,
     .ext_cfg = {
         .channel         = 6,
@@ -68,6 +78,34 @@ wifi_softap_cfg_t ap_cfg = {
         .psk_value = NULL,
     }
 };
+
+static uint32_t djb_hash_hexdata(const char *input, uint32_t len)
+{
+    uint32_t hash = 5381;
+    int c = *input;
+
+    for (uint32_t i = 0; i < len; i++)
+    {
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        input++;
+        c = *input;
+    }
+    return hash;
+}
+
+static void chip_uuid_generate_mac(uint8_t mac[6])
+{
+    uint8_t chip_uid[16] = {0};
+    uint32_t hash = 0;
+    hal_flash_read_unique_id(chip_uid);
+    hash = djb_hash_hexdata((const char *)chip_uid, sizeof(chip_uid));
+    mac[0] = 0x00;
+    mac[1] = 0x50;
+    mac[2] = (uint8_t)((hash) & 0xFF);
+    mac[3] = (uint8_t)((hash >> 8) & 0xFF);
+    mac[4] = (uint8_t)((hash >> 16) & 0xFF);
+    mac[5] = (uint8_t)((hash >> 24) & 0xFF);
+}
 
 static void wifi_scan_complete_cb(void * arg)
 {
@@ -102,28 +140,30 @@ static void wifi_connect_failed_cb(void * arg)
     LOG(LOG_LVL_INFO, "############ wifi_connect_failed!, reason = %d, please retry. ############\r\n", reason);
 }
 
-void wifi_init_sta(void)
+static void wifi_init_sta(void)
 {
     sta_ps_mode_t ps_mode = PM_WIFI_DEFAULT_PS_MODE;
 
-    //1. sta mac get
-     if (SYSPARAM_ERR_NONE != sysparam_sta_mac_get(mac_addr)) {
-        LOG(LOG_LVL_ERROR, "[%s]sta mac get failed!!!\r\n", __func__);
-        return;
-    }
-    if (mac_addr[0] == STA_MAC_ADDR0 &&
-        mac_addr[1] == STA_MAC_ADDR1 &&
-        mac_addr[2] == STA_MAC_ADDR2 &&
-        mac_addr[3] == STA_MAC_ADDR3 &&
-        mac_addr[4] == STA_MAC_ADDR4 &&
-        mac_addr[5] == STA_MAC_ADDR5) {
-        ln_generate_random_mac(mac_addr);
-        sysparam_sta_mac_update((const uint8_t *)mac_addr);
-    }
+    //1. generate mac
+    //ln_generate_random_mac(mac_addr);
+    chip_uuid_generate_mac(mac_addr);
+    sysparam_sta_mac_update((const uint8_t *)mac_addr);
 
     //2. net device(lwip)
     netdev_set_mac_addr(NETIF_IDX_STA, mac_addr);
     netdev_set_active(NETIF_IDX_STA);
+    sysparam_sta_mac_update((const uint8_t *)mac_addr);
+
+    // static ip address
+    {
+        #if (LWIP_DHCP == 0)
+            tcpip_ip_info_t  ip_info;
+            ip_info.ip.addr      = ipaddr_addr((const char *)LOCAL_STATIC_IP_ADDR);
+            ip_info.gw.addr      = ipaddr_addr((const char *)LOCAL_STATIC_GW_ADDR);
+            ip_info.netmask.addr = ipaddr_addr((const char *)LOCAL_STATIC_NM_ADDR);
+            netdev_set_ip_info(NETIF_IDX_STA, &ip_info);
+        #endif
+    }
 
     //3. wifi start
     wifi_manager_reg_event_callback(WIFI_MGR_EVENT_STA_SCAN_COMPLETE, &wifi_scan_complete_cb);
@@ -153,7 +193,7 @@ static void ap_startup_cb(void * arg)
     netdev_set_state(NETIF_IDX_AP, NETDEV_UP);
 }
 
-void wifi_init_ap(void)
+static void wifi_init_ap(void)
 {
     tcpip_ip_info_t  ip_info;
     server_config_t  server_config;
@@ -171,14 +211,18 @@ void wifi_init_ap(void)
     server_config.client_max    = 3;
     dhcpd_curr_config_set(&server_config);
 
-    //1. net device(lwip).
+    //1. generate mac
+    //ln_generate_random_mac(mac_addr);
+    chip_uuid_generate_mac(mac_addr);
+    sysparam_softap_mac_update((const uint8_t *)mac_addr);
+
+    //2. net device(lwip).
     netdev_set_mac_addr(NETIF_IDX_AP, mac_addr);
     netdev_set_ip_info(NETIF_IDX_AP, &ip_info);
     netdev_set_active(NETIF_IDX_AP);
     wifi_manager_reg_event_callback(WIFI_MGR_EVENT_SOFTAP_STARTUP, &ap_startup_cb);
 
-    sysparam_softap_mac_update((const uint8_t *)mac_addr);
-
+    snprintf(&g_softap_ssid[strlen(DEFAULT_SSID_PREFIX)], 5, "%02X%02X", mac_addr[4],mac_addr[5]);
     ap_cfg.ext_cfg.psk_value = NULL;
     if ((strlen(ap_cfg.pwd) != 0) &&
         (ap_cfg.ext_cfg.authmode != WIFI_AUTH_OPEN) &&
@@ -190,7 +234,8 @@ void wifi_init_ap(void)
         }
     }
 
-    //2. wifi
+    //3. wifi softAP start
+    LOG(LOG_LVL_INFO, "softAP ssid:%s,pwd:%s\r\n", g_softap_ssid, g_softap_pwd);
     if(WIFI_ERR_NONE !=  wifi_softap_start(&ap_cfg)){
         LOG(LOG_LVL_ERROR, "[%s, %d]wifi_start() fail.\r\n", __func__, __LINE__);
     }
@@ -211,7 +256,7 @@ static void wifi_connect_status_dump(void)
         detail.private_err_code[0]);
 }
 
-void usr_app_task_entry(void *params)
+static void usr_app_task_entry(void *params)
 {
     LN_UNUSED(params);
 
@@ -239,7 +284,7 @@ void usr_app_task_entry(void *params)
     }
 }
 
-void temp_cal_app_task_entry(void *params)
+static void temp_cal_app_task_entry(void *params)
 {
     LN_UNUSED(params);
     uint8_t cnt = 0;

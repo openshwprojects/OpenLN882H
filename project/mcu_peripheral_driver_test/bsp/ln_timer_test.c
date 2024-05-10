@@ -13,8 +13,9 @@
     Timer使用说明：
 
     1. Timer Mode寄存器使用方式：
-                                0 ： 使用自由运行模式时，计数器会自动加载最大值。
-                                1 ： 使用用户定义模式时，计数器会自动加载我们设定的计数值。
+
+        0 ： 使用自由运行模式时，计数器会自动加载最大值。
+        1 ： 使用用户定义模式时，计数器会自动加载我们设定的计数值。
 
 
     2. 不使用PWM也不分频的情况下，定时时间为 ((1 / pclk0) * tim_load_value) s
@@ -59,16 +60,14 @@ void ln_timer_test(void)
     gpio_init.pin = GPIO_PIN_7;                    //配置GPIO引脚号
     hal_gpio_init(GPIOB_BASE,&gpio_init);
 
-    hal_gpio_pin_afio_select(GPIOB_BASE,GPIO_PIN_8,TIMER1_PWM);     //配置TIMER1 PWM引脚复用
-    hal_gpio_pin_afio_en(GPIOB_BASE,GPIO_PIN_8,HAL_ENABLE);         //使能引脚复用
-
-
+    hal_gpio_pin_afio_select(GPIOA_BASE,GPIO_PIN_8,TIMER1_PWM);     //配置TIMER1 PWM引脚复用
+    hal_gpio_pin_afio_en(GPIOA_BASE,GPIO_PIN_8,HAL_ENABLE);         //使能引脚复用
 
     //Timer初始化
     tim_init_t_def tim_init;
     memset(&tim_init,0,sizeof(tim_init));
 
-    tim_init.tim_load_value = 80000 - 1;                   //设置加载值，定时时间 = 1 / 80000000 * 80000 = 1ms
+    tim_init.tim_load_value = 40000 - 1;            //设置加载值，定时时间 = 1 / 40000000 * 40000 = 1ms
     tim_init.tim_mode = TIM_USER_DEF_CNT_MODE;      //设置定时器模式，设置为用户定义模式
 
     tim_init.tim_div = 0;                           //设置Timer不分频
@@ -95,7 +94,7 @@ void ln_timer_test(void)
     hal_tim_it_cfg(TIMER3_BASE,TIM_IT_FLAG_ACTIVE,HAL_ENABLE);      //配置中断
 
     //Timer PWM初始化
-    tim_init.tim_load2_value = 80000 - 1;                  //高电平时间 = 1 / 80000000 * 80000 = 1ms，所以PWM高电平时间=1ms,低电平时间 = 1ms.
+    tim_init.tim_load2_value = 40000 - 1;           //高电平时间 = 1 / 40000000 * 40000 = 1ms，所以PWM高电平时间=1ms,低电平时间 = 1ms,所以PWM频率为500hz
     hal_tim_init(TIMER1_BASE,&tim_init);            //初始化定时器
     hal_tim_en(TIMER1_BASE,HAL_ENABLE);             //使能定时器模块
     hal_tim_pwm_en(TIMER1_BASE,HAL_ENABLE);         //使能PWM
@@ -119,11 +118,11 @@ void ln_timer_test(void)
         if(duty <= 0.02f)
             cnt_dir = 0;
 
-        hal_tim_set_load_value(TIMER1_BASE,duty * 160000);
-        hal_tim_set_load2_value(TIMER1_BASE,(1-duty) * 160000);
+        hal_tim_set_load_value(TIMER1_BASE,duty * 80000);
+        hal_tim_set_load2_value(TIMER1_BASE,(1-duty) * 80000);
 
-        hal_tim_set_load_value(TIMER0_BASE,duty * 160000);
-        hal_tim_set_load2_value(TIMER0_BASE,(1-duty) * 160000);
+        hal_tim_set_load_value(TIMER0_BASE,duty * 80000);
+        hal_tim_set_load2_value(TIMER0_BASE,(1-duty) * 80000);
         ln_delay_ms(500);
     }
 }
@@ -132,7 +131,7 @@ void TIMER0_IRQHandler()
 {
     if(hal_tim_get_it_flag(TIMER0_BASE,TIM_IT_FLAG_ACTIVE) == 1)
     {
-        hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_5);                   //翻转GPIO，便于测试
+        hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_5);               //翻转GPIO，便于测试
         hal_tim_clr_it_flag(TIMER0_BASE,TIM_IT_FLAG_ACTIVE);      //清除标志位
     }
 }
@@ -141,7 +140,7 @@ void TIMER1_IRQHandler()
 {
     if(hal_tim_get_it_flag(TIMER1_BASE,TIM_IT_FLAG_ACTIVE) == 1)
     {
-        //hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_6);                //翻转GPIO，便于测试
+        //hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_6);             //翻转GPIO，便于测试
         hal_tim_clr_it_flag(TIMER1_BASE,TIM_IT_FLAG_ACTIVE);      //清除标志位
     }
 }
@@ -150,7 +149,7 @@ void TIMER2_IRQHandler()
 {
     if(hal_tim_get_it_flag(TIMER2_BASE,TIM_IT_FLAG_ACTIVE) == 1)
     {
-        hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_6);                   //翻转GPIO，便于测试
+        hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_6);               //翻转GPIO，便于测试
         hal_tim_clr_it_flag(TIMER2_BASE,TIM_IT_FLAG_ACTIVE);      //清除标志位
     }
 }
@@ -159,7 +158,7 @@ void TIMER3_IRQHandler(void)
 {
     if(hal_tim_get_it_flag(TIMER3_BASE,TIM_IT_FLAG_ACTIVE) == 1)
     {
-        hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_7);                   //翻转GPIO，便于测试
+        hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_7);               //翻转GPIO，便于测试
         hal_tim_clr_it_flag(TIMER3_BASE,TIM_IT_FLAG_ACTIVE);      //清除标志位
     }
 }

@@ -43,9 +43,9 @@ int g_lwip_mbox_cnt = 0;
 #endif
 
 #if (NO_SYS == 0)
-#if (defined(__GNUC__) && !defined(__CC_ARM))
+#if (defined(__GNUC__) && !defined(__ARMCC_VERSION))
 extern int errno;
-#elif defined(__CC_ARM)
+#elif defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050))
 int errno;
 #endif
 

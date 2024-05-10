@@ -23,11 +23,6 @@ uint16_t adc_data[400];
 void adc_dma_tran_complete(void);
 
 
-/*
- *  注意！！！ 
- *  在驱动例程中，有一些函数的参数是指向字符串（数组）地址的指针，函数中没有检查这些指针的有效性，
- *  没有判断指针是否为空，也没有判断指针指向的数据是否还有剩余空间，这些都需要使用者自行决定！！！
-*/
 int main (int argc, char* argv[])
 {  
     /****************** 1. 系统初始化 ***********************/
@@ -37,13 +32,21 @@ int main (int argc, char* argv[])
     ln_show_reg_init();
 
     /****************** 2. 外设配置 ***********************/
+    /**
+        GPIOA0  ->  ADC2
+        GPIOA1  ->  ADC3
+        GPIOA4  ->  ADC4
+        GPIOB3  ->  ADC5
+        GPIOB4  ->  ADC6
+        GPIOB5  ->  ADC7
+     */
     adc_dma_init(ADC_CH5,(uint32_t *)adc_data,400,adc_dma_tran_complete);
     adc_dma_start();
     while(1)
     {
         LOG(LOG_LVL_INFO,"ln882H running! \n");
 
-        ln_delay_ms(100);
+        ln_delay_ms(1000);
     }
 }
 

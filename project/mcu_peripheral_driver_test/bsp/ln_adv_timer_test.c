@@ -16,7 +16,6 @@
     1. 引脚说明：
             A8  ->  PWM引脚1
             A9  ->  PWM引脚2
-            B7  ->  脉冲计数输入引脚
 
     2. 配置PWM死区的时候，会自动让pwma和pwmb形成互补，此时，如果想改变波形的占空比只能通过改变pwma的通道值，改变pwmb无效,死区时间 = dead_gap_value * 1 / (APB / DIV) s
 
@@ -28,7 +27,7 @@
         
     4. 请注意，load寄存器只能在PWM失能的情况下修改，否则无效。
     
-    5. 设置PWM占空比的时候，请不要设置成100%，否则会出现毛刺！
+    5. 设置PWM占空比的时候，请不要设置成100%，否则会出现毛刺,这个毛刺可以通过控制GPIO解决，具体可以参考project/mcu_peripheral_driver_demo/PWM
     
     6. PWM的ISRR寄存器，是W1C，因此不支持使用位域的方式清除中断标志位。直接SET ISRR寄存器相应的标志位为1来清除中断标志位。
     
@@ -52,10 +51,10 @@ void ln_adv_timer_test(void)
     /* pwm 引脚初始化 */
     hal_gpio_pin_afio_select(GPIOA_BASE,GPIO_PIN_8,ADV_TIMER_PWM0);
     hal_gpio_pin_afio_select(GPIOA_BASE,GPIO_PIN_9,ADV_TIMER_PWM1);
-    hal_gpio_pin_afio_select(GPIOB_BASE,GPIO_PIN_7,ADV_TIMER_PWM2);
+ 
     hal_gpio_pin_afio_en(GPIOA_BASE,GPIO_PIN_8,HAL_ENABLE);
     hal_gpio_pin_afio_en(GPIOA_BASE,GPIO_PIN_9,HAL_ENABLE);  
-    hal_gpio_pin_afio_en(GPIOB_BASE,GPIO_PIN_7,HAL_ENABLE);  
+
     
     gpio_init_t_def gpio_init;
     memset(&gpio_init,0,sizeof(gpio_init));        //清零结构体
@@ -68,9 +67,9 @@ void ln_adv_timer_test(void)
     adv_tim_init_t_def adv_tim_init;
     memset(&adv_tim_init,0,sizeof(adv_tim_init));
     adv_tim_init.adv_tim_clk_div = 0;                               //设置时钟分频，0为不分频
-    adv_tim_init.adv_tim_load_value =  40000 - 1;                   //设置PWM频率，40000 * 1 / PCLK(80M) / DIV(0) = 2k
-    adv_tim_init.adv_tim_cmp_a_value = 40000 ;                      //设置通道a比较值，占空比为 50%
-    adv_tim_init.adv_tim_cmp_b_value = 40000 ;                      //设置通道b比较值，占空比为 50%
+    adv_tim_init.adv_tim_load_value =  40000 - 1;                   //设置PWM频率，40000 * 1 / PCLK(40M) / DIV(0) = 1k
+    adv_tim_init.adv_tim_cmp_a_value = 20000 - 2;                   //设置通道a比较值，占空比为 50%
+    adv_tim_init.adv_tim_cmp_b_value = 20000 - 2;                   //设置通道b比较值，占空比为 50%
     adv_tim_init.adv_tim_dead_gap_value = 1000;                     //设置死区时间
     adv_tim_init.adv_tim_dead_en = ADV_TIMER_DEAD_DIS;              //不开启死区
     adv_tim_init.adv_tim_cnt_mode = ADV_TIMER_CNT_MODE_INC;         //向上计数模式
@@ -79,16 +78,6 @@ void ln_adv_timer_test(void)
     adv_tim_init.adv_tim_cha_it_mode = ADV_TIMER_CHA_IT_MODE_INC;   //使能通道a向上计数中断
     adv_tim_init.adv_tim_chb_it_mode = ADV_TIMER_CHB_IT_MODE_INC;   //使能通道b向上计数中断
     hal_adv_tim_init(ADV_TIMER_0_BASE,&adv_tim_init);               //初始化ADV_TIMER0
-
-
-    /* 输入捕获-脉冲计数配置初始化 */
-    memset(&adv_tim_init,0,sizeof(adv_tim_init));
-    adv_tim_init.adv_tim_clk_div = 0;                               //设置时钟分频，0为不分频
-    adv_tim_init.adv_tim_cap_edg = ADV_TIMER_EDG_RISE;              //设置捕获上升沿
-    adv_tim_init.adv_tim_cap_mode = ADV_TIMER_CAP_MODE_2;           //设置捕获模式2
-    adv_tim_init.adv_tim_cap_en = ADV_TIMER_CAP_EN;                 //捕获模式使能
-    adv_tim_init.adv_tim_load_value = 0xFFFF;
-    hal_adv_tim_init(ADV_TIMER_1_BASE,&adv_tim_init);               //初始化ADV_TIMER1
     
     /* enable the pwm interrupt */
     hal_adv_tim_it_cfg(ADV_TIMER_0_BASE,ADV_TIMER_IT_FLAG_CMPA,HAL_ENABLE); //使能通道a中断
@@ -102,10 +91,10 @@ void ln_adv_timer_test(void)
     NVIC_SetPriority(ADV_TIMER_IRQn,     4);
     NVIC_EnableIRQ(ADV_TIMER_IRQn);
     
-    volatile uint32_t cmp_a_value = 0;       //通道a的比较值
-    float    duty_value  = 0;       //占空比
-    uint8_t  inc_dir     = 0;       //占空比递增/减方向
-    volatile uint32_t pulse_cnt   = 0;       //脉冲计数
+    volatile uint32_t cmp_a_value = 0;          //通道a的比较值
+    float    duty_value  = 0;                   //占空比
+    uint8_t  inc_dir     = 0;                   //占空比递增/减方向
+    volatile uint32_t pulse_cnt   = 0;          //脉冲计数
     
     while(1)
     {

@@ -15,40 +15,40 @@
 
                 2. AT24C04、OLED、SHT30、MPU9250是通过I2C挂载在一起的,I2C的SCL和SDA要接上拉电阻。接线如下：
                 
-                                                                 LN882H             OLED                AT24C04             SHT30               MPU9250            BMP280
-                                                                
-                                                                 PB8         ->     D0          ->      SCL         ->      SCL         ->      SCL        ->      SCL 
-                                                                 PB9         ->     D1          ->      SDA         ->      SDA         ->      SDA        ->      SDA 
-                                                                 3.3v        ->     3.3V        ->      3.3V        ->      3.3V        ->      3.3V       ->      3.3V
-                                                                 GND         ->     GND         ->      GND         ->      GND         ->      GND        ->      GND
-                                                                 PB4         ->     RES         ->      
-                                                                 GND         ->     CS          ->      WP
-                                                                 GND         ->     GND         ->      A0
-                                                                 GND         ->     GND         ->      A1
-                                                                 GND         ->     GND         ->      A2      
+                LN882H             OLED                AT24C04             SHT30               MPU9250            BMP280
+            
+                PB8         ->     D0          ->      SCL         ->      SCL         ->      SCL        ->      SCL 
+                PB9         ->     D1          ->      SDA         ->      SDA         ->      SDA        ->      SDA 
+                3.3v        ->     3.3V        ->      3.3V        ->      3.3V        ->      3.3V       ->      3.3V
+                GND         ->     GND         ->      GND         ->      GND         ->      GND        ->      GND
+                PB4         ->     RES         ->      
+                GND         ->     CS          ->      WP
+                GND         ->     GND         ->      A0
+                GND         ->     GND         ->      A1
+                GND         ->     GND         ->      A2      
 
                 3. I2C波特率设置：      快速模式下：400k SCL周期为2.5us，假设外设工作时钟为40MHZ 所以Tpckl = 1/40M = 0.025us
                 
-                                        如果duty = 0;
-                                        fs = 1;
-                                                Thigh = CCR × TPCLK1 
-                                                Tlow = 2 × CCR × TPCLK1
-                                                Thigh + Tlow = 2.5us
-                                                所以 3 * CCR × TPCLK1 = 2.5us  CCR = 33      
-                                        
-                                        如果duty = 1;
-                                        fs = 1;
-                                                Thigh = 9 * CCR × TPCLK1 
-                                                Tlow = 16 × CCR × TPCLK1
-                                                Thigh + Tlow = 2.5us
-                                                所以 3 * CCR × TPCLK1 = 2.5us  CCR = 4
+                    如果duty = 0;
+                    fs = 1;
+                            Thigh = CCR × TPCLK1 
+                            Tlow = 2 × CCR × TPCLK1
+                            Thigh + Tlow = 2.5us
+                            所以 3 * CCR × TPCLK1 = 2.5us  CCR = 33      
+                    
+                    如果duty = 1;
+                    fs = 1;
+                            Thigh = 9 * CCR × TPCLK1 
+                            Tlow = 16 × CCR × TPCLK1
+                            Thigh + Tlow = 2.5us
+                            所以 3 * CCR × TPCLK1 = 2.5us  CCR = 4
 
-                                        duty    ->      I2C_CCR->duty
-                                        fs      ->      I2C_CCR->fs
-                                        Thigh   ->      I2C_CLK高电平时间
-                                        Tlow    ->      I2C_CLK低电平时间
-                                        TPCLK1  ->      外设时钟    
-                                        CCR     ->      I2C_CCR->ccr
+                    duty    ->      I2C_CCR->duty
+                    fs      ->      I2C_CCR->fs
+                    Thigh   ->      I2C_CLK高电平时间
+                    Tlow    ->      I2C_CLK低电平时间
+                    TPCLK1  ->      外设时钟    
+                    CCR     ->      I2C_CCR->ccr
 */
 
 #include "ln_i2c_test.h"

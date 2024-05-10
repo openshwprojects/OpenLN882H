@@ -18,7 +18,6 @@
     GPIOA1  ->  ADC3
     GPIOA4  ->  ADC4
     GPIOB3  ->  ADC5
-
     GPIOB4  ->  ADC6
     GPIOB5  ->  ADC7
 */

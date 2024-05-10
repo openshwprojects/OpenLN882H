@@ -114,12 +114,18 @@ __STATIC_INLINE__ uint8_t pbkdf2_sha1(uint8_t *key, uint8_t key_len,
     if ((key_len > 64) || (data_len > 32))
         return 0;
 
-    if(pbkdf2_sha1_f(key, key_len, data, data_len, 4096, 1, digest) == 0)
-    {
+#if (!(LN_SW_PSK_USING_FASTPBKDF2_ALGORITHM))
+    if(pbkdf2_sha1_f(key, key_len, data, data_len, 4096, 1, digest) == 0) {
         return 0;
     }
-    return pbkdf2_sha1_f(key, key_len, data, data_len,
-                            4096, 2, &digest[LN_SHA1_DIGEST_SIZE]);
+    return pbkdf2_sha1_f(key, key_len, data, data_len, 4096, 2, &digest[LN_SHA1_DIGEST_SIZE]);
+#else
+
+    #include "utils/fastpbkdf2/fastpbkdf2.h"
+    fastpbkdf2_hmac_sha1(key, key_len, data, data_len, 4096, digest, 40);
+    return 1;
+#endif    
+    
 }
 
 /**
