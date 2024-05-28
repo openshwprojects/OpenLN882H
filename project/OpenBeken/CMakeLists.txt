@@ -47,7 +47,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_doorSensorWithDeepSleep.c
     app/src/driver/drv_gn6932.c
     app/src/driver/drv_hd2015.c
-#    app/src/driver/drv_ht16k33.c
+    app/src/driver/drv_ht16k33.c
     app/src/driver/drv_httpButtons.c
     app/src/driver/drv_hue.c
     app/src/driver/drv_kp18058.c
@@ -59,14 +59,14 @@ set(PROJ_ALL_SRC
     app/src/driver/drv_mcp9808.c
 #    app/src/driver/drv_ntp_events.c
     app/src/driver/drv_ntp.c
-#    app/src/driver/drv_pt6523.c
+    app/src/driver/drv_pt6523.c
     app/src/driver/drv_pwm_groups.c
     app/src/driver/drv_pwmToggler.c
     app/src/driver/drv_pwrCal.c
 #    app/src/driver/drv_rn8209.c
-#    app/src/driver/drv_sgp.c
-#    app/src/driver/drv_shiftRegister.c
-#    app/src/driver/drv_sht3x.c
+    app/src/driver/drv_sgp.c
+    app/src/driver/drv_shiftRegister.c
+    app/src/driver/drv_sht3x.c
 #    app/src/driver/drv_sm16703P.c
     app/src/driver/drv_sm2135.c
     app/src/driver/drv_sm2235.c
@@ -77,7 +77,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_spidma.c
     app/src/driver/drv_ssdp.c
     app/src/driver/drv_tasmotaDeviceGroups.c
-#    app/src/driver/drv_test_drivers.c
+    app/src/driver/drv_test_drivers.c
 #    app/src/driver/drv_textScroller.c
     app/src/driver/drv_tm_gn_display_shared.c
     app/src/driver/drv_tm1637.c
