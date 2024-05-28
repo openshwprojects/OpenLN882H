@@ -71,14 +71,14 @@ set(PROJ_ALL_SRC
     app/src/driver/drv_sm2135.c
     app/src/driver/drv_sm2235.c
     app/src/driver/drv_soft_i2c.c
-#    app/src/driver/drv_soft_spi.c
+    app/src/driver/drv_soft_spi.c
 #    app/src/driver/drv_spi_flash.c
 #    app/src/driver/drv_spi.c
 #    app/src/driver/drv_spidma.c
     app/src/driver/drv_ssdp.c
     app/src/driver/drv_tasmotaDeviceGroups.c
     app/src/driver/drv_test_drivers.c
-#    app/src/driver/drv_textScroller.c
+    app/src/driver/drv_textScroller.c
     app/src/driver/drv_tm_gn_display_shared.c
     app/src/driver/drv_tm1637.c
     app/src/driver/drv_tm1638.c
