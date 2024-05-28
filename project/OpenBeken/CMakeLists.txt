@@ -24,9 +24,9 @@ set(PROJ_ALL_SRC
     app/src/cmnds/cmd_tcp.c
     app/src/cmnds/cmd_test.c
     app/src/cmnds/cmd_tokenizer.c
-#    app/src/devicegroups/deviceGroups_read.c
-#    app/src/devicegroups/deviceGroups_util.c
-#    app/src/devicegroups/deviceGroups_write.c
+    app/src/devicegroups/deviceGroups_read.c
+    app/src/devicegroups/deviceGroups_util.c
+    app/src/devicegroups/deviceGroups_write.c
 #    app/src/driver/drv_adcButton.c
 #    app/src/driver/drv_adcSmoother.c
 #    app/src/driver/drv_battery.c
