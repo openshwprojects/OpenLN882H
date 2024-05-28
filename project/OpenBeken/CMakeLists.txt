@@ -27,9 +27,9 @@ set(PROJ_ALL_SRC
     app/src/devicegroups/deviceGroups_read.c
     app/src/devicegroups/deviceGroups_util.c
     app/src/devicegroups/deviceGroups_write.c
-#    app/src/driver/drv_adcButton.c
-#    app/src/driver/drv_adcSmoother.c
-#    app/src/driver/drv_battery.c
+    app/src/driver/drv_adcButton.c
+    app/src/driver/drv_adcSmoother.c
+    app/src/driver/drv_battery.c
     app/src/driver/drv_bl_shared.c
     app/src/driver/drv_bl0937.c
 #    app/src/driver/drv_bl0942.c
