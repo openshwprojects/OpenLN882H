@@ -37,26 +37,26 @@ set(PROJ_ALL_SRC
     app/src/driver/drv_bp1658cj.c
     app/src/driver/drv_bp5758d.c
     app/src/driver/drv_bridge_driver.c
-#    app/src/driver/drv_chargingLimit.c
-#    app/src/driver/drv_cht8305.c
-#    app/src/driver/drv_cse7766.c
-#    app/src/driver/drv_ddp.c
-#    app/src/driver/drv_debouncer.c
+    app/src/driver/drv_chargingLimit.c
+    app/src/driver/drv_cht8305.c
+    app/src/driver/drv_cse7766.c
+    app/src/driver/drv_ddp.c
+    app/src/driver/drv_debouncer.c
     app/src/driver/drv_dht_internal.c
     app/src/driver/drv_dht.c
 #    app/src/driver/drv_doorSensorWithDeepSleep.c
     app/src/driver/drv_gn6932.c
     app/src/driver/drv_hd2015.c
 #    app/src/driver/drv_ht16k33.c
-#    app/src/driver/drv_httpButtons.c
+    app/src/driver/drv_httpButtons.c
     app/src/driver/drv_hue.c
     app/src/driver/drv_kp18058.c
     app/src/driver/drv_kp18068.c
     app/src/driver/drv_main.c
-#    app/src/driver/drv_max72xx_clock.c
-#    app/src/driver/drv_max72xx_internal.c
-#    app/src/driver/drv_max72xx_single.c
-#    app/src/driver/drv_mcp9808.c
+    app/src/driver/drv_max72xx_clock.c
+    app/src/driver/drv_max72xx_internal.c
+    app/src/driver/drv_max72xx_single.c
+    app/src/driver/drv_mcp9808.c
 #    app/src/driver/drv_ntp_events.c
     app/src/driver/drv_ntp.c
 #    app/src/driver/drv_pt6523.c
