@@ -75,7 +75,7 @@ set(PROJ_ALL_SRC
 #    app/src/driver/drv_spi_flash.c
 #    app/src/driver/drv_spi.c
 #    app/src/driver/drv_spidma.c
-#    app/src/driver/drv_ssdp.c
+    app/src/driver/drv_ssdp.c
     app/src/driver/drv_tasmotaDeviceGroups.c
 #    app/src/driver/drv_test_drivers.c
 #    app/src/driver/drv_textScroller.c
