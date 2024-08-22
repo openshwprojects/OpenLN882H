@@ -110,6 +110,7 @@ list(APPEND MODULE_SRC ${SERIAL_SRC})
 ###################################   MCU   ####################################
 set(MCU_SRC
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_adc.c
+    ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_adv_timer.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_cache.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_common.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_flash.c
