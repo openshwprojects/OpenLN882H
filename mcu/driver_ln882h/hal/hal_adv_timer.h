@@ -327,7 +327,8 @@ uint16_t    hal_adv_tim_get_comp_a(uint32_t adv_tim_x_base);
 uint8_t     hal_adv_tim_get_cap_dege(uint32_t adv_tim_x_base);
 uint8_t     hal_adv_tim_get_clock_div(uint32_t adv_tim_x_base);
 
-uint32_t get_adv_timer_base(uint32_t channel);
+void hal_adv_tim_init(uint32_t channel, adv_tim_init_t_def* adv_tim_init) {
+    uint32_t adv_tim_x_base = get_adv_timer_base(channel);
 
             //interrupt
 void        hal_adv_tim_it_cfg(uint32_t adv_tim_x_base,adv_tim_it_flag_t adv_tim_it_flag,hal_en_t en);
