@@ -1,4 +1,3 @@
-
 /**
  * @file     hal_adv_timer.h
  * @author   BSP Team 
@@ -21,65 +20,55 @@
 #include "reg_adv_timer.h"
 
 #define ADV_TIMER_IT_BASE  (PWM_BASE + 0x20 * 0)
-#define ADV_TIMER_0_BASE   (PWM_BASE + 0x20 * 1)  // Timer for PWM Channel 0
-#define ADV_TIMER_1_BASE   (PWM_BASE + 0x20 * 2)  // Timer for PWM Channel 1
-#define ADV_TIMER_2_BASE   (PWM_BASE + 0x20 * 3)  // Timer for PWM Channel 2
-#define ADV_TIMER_3_BASE   (PWM_BASE + 0x20 * 4)  // Timer for PWM Channel 3
-#define ADV_TIMER_4_BASE   (PWM_BASE + 0x20 * 5)  // Timer for PWM Channel 4
-#define ADV_TIMER_5_BASE   (PWM_BASE + 0x20 * 6)  // Timer for PWM Channel 5
-#define ADV_TIMER_6_BASE   (PWM_BASE + 0x20 * 7)  // Timer for PWM Channel 6
-#define ADV_TIMER_7_BASE   (PWM_BASE + 0x20 * 8)  // Timer for PWM Channel 7
-#define ADV_TIMER_8_BASE   (PWM_BASE + 0x20 * 9)  // Timer for PWM Channel 8
-#define ADV_TIMER_9_BASE   (PWM_BASE + 0x20 * 10) // Timer for PWM Channel 9
-#define ADV_TIMER_10_BASE  (PWM_BASE + 0x20 * 11) // Timer for PWM Channel 10
-#define ADV_TIMER_11_BASE  (PWM_BASE + 0x20 * 12) // Timer for PWM Channel 11
+#define ADV_TIMER_0_BASE   (PWM_BASE + 0x20 * 1)
+#define ADV_TIMER_1_BASE   (PWM_BASE + 0x20 * 2)
+#define ADV_TIMER_2_BASE   (PWM_BASE + 0x20 * 3)
+#define ADV_TIMER_3_BASE   (PWM_BASE + 0x20 * 4)
+#define ADV_TIMER_4_BASE   (PWM_BASE + 0x20 * 5)
+#define ADV_TIMER_5_BASE   (PWM_BASE + 0x20 * 6)
+#define IS_ADV_TIMER_IT_BASE(BASE)      ((BASE  == ADV_TIMER_IT))
 
-#define IS_ADV_TIMER_IT_BASE(BASE)      ((BASE  == ADV_TIMER_IT_BASE))
-
-#define IS_ADV_TIMER_ALL_PERIPH(PERIPH) (((PERIPH) == ADV_TIMER_0_BASE)  || ((PERIPH) == ADV_TIMER_1_BASE)   ||                                           ((PERIPH) == ADV_TIMER_2_BASE)  || ((PERIPH) == ADV_TIMER_3_BASE)   ||                                           ((PERIPH) == ADV_TIMER_4_BASE)  || ((PERIPH) == ADV_TIMER_5_BASE)   ||                                           ((PERIPH) == ADV_TIMER_6_BASE)  || ((PERIPH) == ADV_TIMER_7_BASE)   ||                                           ((PERIPH) == ADV_TIMER_8_BASE)  || ((PERIPH) == ADV_TIMER_9_BASE)   ||                                           ((PERIPH) == ADV_TIMER_10_BASE) || ((PERIPH) == ADV_TIMER_11_BASE))     
-
+#define IS_ADV_TIMER_ALL_PERIPH(PERIPH) (((PERIPH) == ADV_TIMER_0_BASE)  || ((PERIPH) == ADV_TIMER_1_BASE)   ||  \
+                                         ((PERIPH) == ADV_TIMER_2_BASE)  || ((PERIPH) == ADV_TIMER_3_BASE)   ||  \
+                                         ((PERIPH) == ADV_TIMER_4_BASE)  || ((PERIPH) == ADV_TIMER_5_BASE))     
 
 typedef enum
 {
     ADV_TIMER_CAP_DIS       = 0,     
-    ADV_TIMER_CAP_EN        = 1,         /* It will be disabled by itself when "cap_mod=0" */
-} adv_tim_cap_en_t;
+    ADV_TIMER_CAP_EN        = 1,         /* It will be diabled by itself when "cap_mod=0" */
+}adv_tim_cap_en_t;
 
 #define IS_TIMER_CAP_EN(EN)   (((EN) == ADV_TIMER_CAP_DIS) || ((EN) == ADV_TIMER_CAP_EN))
-
 
 typedef enum
 {
     ADV_TIMER_TIMER_DIS     = 0,     
     ADV_TIMER_TIMER_EN      = 1,        
-} adv_tim_tim_en_t;
+}adv_tim_tim_en_t;
 
 #define IS_TIMER_TIMER_EN(EN) (((EN) == ADV_TIMER_TIMER_DIS) || ((EN) == ADV_TIMER_TIMER_EN))
-
 
 typedef enum
 {
     ADV_TIMER_DEAD_DIS      = 0,     
     ADV_TIMER_DEAD_EN       = 1,        
-} adv_tim_dead_en_t;
+}adv_tim_dead_en_t;
 
 #define IS_TIMER_DEAD_EN(EN)  (((EN) == ADV_TIMER_DEAD_DIS) || ((EN) == ADV_TIMER_DEAD_EN))
-
 
 typedef enum
 {
     ADV_TIMER_CHA_DIS       = 0,     
     ADV_TIMER_CHA_EN        = 1,        
-} adv_tim_cha_en_t;
+}adv_tim_cha_en_t;
 
 #define IS_TIMER_CHA_EN(EN)  (((EN) == ADV_TIMER_CHA_DIS) || ((EN) == ADV_TIMER_CHA_EN))
-
 
 typedef enum
 {
     ADV_TIMER_CHB_DIS       = 0,     
     ADV_TIMER_CHB_EN        = 1,        
-} adv_tim_chb_en_t;
+}adv_tim_chb_en_t;
 
 #define IS_TIMER_CHB_EN(EN)  (((EN) == ADV_TIMER_CHB_DIS) || ((EN) == ADV_TIMER_CHB_EN))
 
@@ -89,9 +78,10 @@ typedef enum
     ADV_TIMER_CHB_IT_MODE_INC       = 1,     /* Equal channel b at increase counter */ 
     ADV_TIMER_CHB_IT_MODE_DEC       = 2,     /* Equal channel b at decrease counter */ 
     ADV_TIMER_CHB_IT_MODE_BOTH      = 3,     /* Equal channel b both at increase and decrease */ 
-} adv_tim_chb_it_mode_t;
+}adv_tim_chb_it_mode_t;
 
-#define IS_TIMER_CHB_IT_MODE(MODE)  (((MODE) == ADV_TIMER_CHB_IT_MODE_DIS) || ((MODE) == ADV_TIMER_CHB_IT_MODE_INC)  ||                                       ((MODE) == ADV_TIMER_CHB_IT_MODE_DEC) || ((MODE) == ADV_TIMER_CHB_IT_MODE_BOTH)  )
+#define IS_TIMER_CHB_IT_MODE(MODE)  (((MODE) == ADV_TIMER_CHB_IT_MODE_DIS) || ((MODE) == ADV_TIMER_CHB_IT_MODE_INC)  ||  \
+                                     ((MODE) == ADV_TIMER_CHB_IT_MODE_DEC) || ((MODE) == ADV_TIMER_CHB_IT_MODE_BOTH)  )
 
 typedef enum
 {
@@ -99,24 +89,24 @@ typedef enum
     ADV_TIMER_CHA_IT_MODE_INC       = 1,     /* Equal channel a at increase counter */ 
     ADV_TIMER_CHA_IT_MODE_DEC       = 2,     /* Equal channel a at decrease counter */ 
     ADV_TIMER_CHA_IT_MODE_BOTH      = 3,     /* Equal channel a both at increase and decrease */ 
-} adv_tim_cha_it_mode_t;
+}adv_tim_cha_it_mode_t;
 
-#define IS_TIMER_CHA_IT_MODE(MODE)  (((MODE) == ADV_TIMER_CHA_IT_MODE_DIS) || ((MODE) == ADV_TIMER_CHA_IT_MODE_INC)  ||                                       ((MODE) == ADV_TIMER_CHA_IT_MODE_DEC) || ((MODE) == ADV_TIMER_CHA_IT_MODE_BOTH) )
+#define IS_TIMER_CHA_IT_MODE(MODE)  (((MODE) == ADV_TIMER_CHA_IT_MODE_DIS) || ((MODE) == ADV_TIMER_CHA_IT_MODE_INC)  ||  \
+                                     ((MODE) == ADV_TIMER_CHA_IT_MODE_DEC) || ((MODE) == ADV_TIMER_CHA_IT_MODE_BOTH) )
 
 typedef enum
 {
     ADV_TIMER_ONCE_DIS       = 0,     
     ADV_TIMER_ONCE_EN        = 1,    /* The timer runs only once */
-} adv_tim_once_en_t;
+}adv_tim_once_en_t;
 
 #define IS_TIMER_ONCE_EN(EN)  (((EN) == ADV_TIMER_ONCE_DIS) || ((EN) == ADV_TIMER_ONCE_EN))
 
-
 typedef enum
 {
-    ADV_TIMER_CAP_MODE_1      = 0,   /* Counter input edge from pin until to load, then output interrupt.                */  
+    ADV_TIMER_CAP_MODE_1      = 0,   /* Counter input edge from pin untill to load, then output interrupt.                */  
     ADV_TIMER_CAP_MODE_2      = 1,   /* Save count value to "pwm_trig" when input edge from pin,and generation interrupt. */    
-} adv_tim_cap_mode_t;
+}adv_tim_cap_mode_t;
 
 #define IS_TIMER_CAP_MODE(MODE)  (((MODE) == ADV_TIMER_CAP_MODE_1) || ((MODE) == ADV_TIMER_CAP_MODE_2))
 
@@ -126,18 +116,18 @@ typedef enum
     ADV_TIMER_EDG_RISE        = 1,        
     ADV_TIMER_EDG_FALL        = 2,        
     ADV_TIMER_EDG_BOTH        = 3,        
-} adv_tim_cap_edg_t;
+}adv_tim_cap_edg_t;
 
-#define IS_TIMER_CAP_EDG(MODE)      (((MODE) == ADV_TIMER_EDG_DIS)  || ((MODE) == ADV_TIMER_EDG_RISE)  ||                                       ((MODE) == ADV_TIMER_EDG_FALL) || ((MODE) == ADV_TIMER_EDG_BOTH)  )
+#define IS_TIMER_CAP_EDG(MODE)      (((MODE) == ADV_TIMER_EDG_DIS)  || ((MODE) == ADV_TIMER_EDG_RISE)  ||  \
+                                     ((MODE) == ADV_TIMER_EDG_FALL) || ((MODE) == ADV_TIMER_EDG_BOTH)  )
 
 typedef enum
 {
     ADV_TIMER_TRG_CLR_DIS     = 0,     
     ADV_TIMER_TRG_CLR_EN      = 1,        
-} adv_tim_trg_clr_en_t;
+}adv_tim_trg_clr_en_t;
 
 #define IS_TIMER_TRG_CLR_EN(EN)    (((EN) == ADV_TIMER_TRG_CLR_DIS) || ((EN) == ADV_TIMER_TRG_CLR_EN))
-
 
 typedef enum
 {
@@ -147,15 +137,11 @@ typedef enum
     ADV_TIMER_TRG_SEL_TIM_3         = 3,        
     ADV_TIMER_TRG_SEL_TIM_4         = 4,        
     ADV_TIMER_TRG_SEL_TIM_5         = 5,               
-    ADV_TIMER_TRG_SEL_TIM_6         = 6,               
-    ADV_TIMER_TRG_SEL_TIM_7         = 7,               
-    ADV_TIMER_TRG_SEL_TIM_8         = 8,               
-    ADV_TIMER_TRG_SEL_TIM_9         = 9,               
-    ADV_TIMER_TRG_SEL_TIM_10        = 10,               
-    ADV_TIMER_TRG_SEL_TIM_11        = 11,               
-} adv_tim_trg_sel_t;                          /* When trig_clr_en=1, trig_sel active           */
+}adv_tim_trg_sel_t;                          /* When trig_clr_en=1, trig_sel active           */
 
-#define IS_TIMER_TRG_SEL(SEL)    (((SEL) == ADV_TIMER_TRG_SEL_TIM_0) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_1)  ||                                   ((SEL) == ADV_TIMER_TRG_SEL_TIM_2) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_3)  ||                                   ((SEL) == ADV_TIMER_TRG_SEL_TIM_4) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_5)  ||                                   ((SEL) == ADV_TIMER_TRG_SEL_TIM_6) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_7)  ||                                   ((SEL) == ADV_TIMER_TRG_SEL_TIM_8) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_9)  ||                                   ((SEL) == ADV_TIMER_TRG_SEL_TIM_10) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_11))
+#define IS_TIMER_TRG_SEL(SEL)    (((SEL) == ADV_TIMER_TRG_SEL_TIM_0) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_1)  || \
+                                    ((SEL) == ADV_TIMER_TRG_SEL_TIM_2) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_3)  || \
+                                    ((SEL) == ADV_TIMER_TRG_SEL_TIM_4) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_5))
 
 typedef enum
 {
@@ -163,25 +149,25 @@ typedef enum
     ADV_TIMER_TRG_MODE_INC          = 1,     /* 1: count eq "pwm_trig" when count up          */     
     ADV_TIMER_TRG_MODE_DEC          = 2,     /* 2: count eq "pwm_trig" when count down        */   
     ADV_TIMER_TRG_MODE_BOTH         = 3,     /* 3: count eq "pwm_trig" both count up or down. */
-} adv_tim_trg_mode_t; 
+}adv_tim_trg_mode_t; 
 
-#define IS_TIMER_TRG_MODE(MODE)      (((MODE) == ADV_TIMER_TRG_MODE_DIS)  || ((MODE) == ADV_TIMER_TRG_MODE_INC)   ||                                        ((MODE) == ADV_TIMER_TRG_MODE_DEC)  || ((MODE) == ADV_TIMER_TRG_MODE_BOTH) )
+#define IS_TIMER_TRG_MODE(MODE)      (((MODE) == ADV_TIMER_TRG_MODE_DIS)  || ((MODE) == ADV_TIMER_TRG_MODE_INC)   ||  \
+                                      ((MODE) == ADV_TIMER_TRG_MODE_DEC)  || ((MODE) == ADV_TIMER_TRG_MODE_BOTH) )
 
 typedef enum
 {
     ADV_TIMER_CNT_MODE_INC          = 0,
     ADV_TIMER_CNT_MODE_DEC          = 1,
     ADV_TIMER_CNT_MODE_BOTH         = 2,
-} adv_tim_cnt_mode_t;
+}adv_tim_cnt_mode_t;
 
 #define IS_TIMER_CNT_MODE(MODE)       (((MODE) == ADV_TIMER_CNT_MODE_INC) || ((MODE) == ADV_TIMER_CNT_MODE_DEC) || ((MODE) == ADV_TIMER_CNT_MODE_BOTH))
-
 
 typedef enum
 {
     ADV_TIMER_CHB_INV_DIS     = 0,     
     ADV_TIMER_CHB_INV_EN      = 1,        
-} adv_tim_chb_inv_en_t;
+}adv_tim_chb_inv_en_t;
 
 #define IS_TIMER_CHB_INV_EN(EN)    (((EN) == ADV_TIMER_CHB_INV_DIS) || ((EN) == ADV_TIMER_CHB_INV_EN))
 
@@ -189,10 +175,9 @@ typedef enum
 {
     ADV_TIMER_CHA_INV_DIS     = 0,     
     ADV_TIMER_CHA_INV_EN      = 1,        
-} adv_tim_cha_inv_en_t;
+}adv_tim_cha_inv_en_t;
 
 #define IS_TIMER_CHA_INV_EN(EN)    (((EN) == ADV_TIMER_CHA_INV_DIS) || ((EN) == ADV_TIMER_CHA_INV_EN))
-
 
 typedef enum
 {
@@ -201,10 +186,9 @@ typedef enum
     ADV_TIMER_STATUS_FLAG_TRIG_RAW    = 1,        // [1] trigger flag
     ADV_TIMER_STATUS_FLAG_CMPA_RAW    = 2,        // [2] compare a flag
     ADV_TIMER_STATUS_FLAG_CMPB_RAW    = 3,        // [3] compare b flag 
-} adv_tim_status_flag_t;
+}adv_tim_status_flag_t;
 
 #define IS_ADV_TIM_STATUS_FLAG(FLAG)        (( FLAG >= 0) && ( FLAG >= 7 ))
-
 
 typedef enum
 {
@@ -213,11 +197,9 @@ typedef enum
     ADV_TIMER_IT_FLAG_CMPA        = 2,          // [2] compare interrupt a flag
     ADV_TIMER_IT_FLAG_CMPB        = 3,          // [3] compare interrupt b flag 
 
-} adv_tim_it_flag_t;
+}adv_tim_it_flag_t;
 
 #define IS_ADV_TIM_IT_FLAG(FLAG)        (( FLAG <= 3 ))
-
-
 
 #define IS_TIMER_DEAD_GAP(GAP)         (((GAP)   <= 0x0FFF))
 #define IS_TIMER_LOAD_VALUE(VALUE)     (((VALUE) <= 0xFFFF))
@@ -226,10 +208,8 @@ typedef enum
 #define IS_TIMER_TRIG_VALUE(VALUE)     (((VALUE) <= 0xFFFF))
 #define IS_TIMER_CLK_DIV(DIV)          (((DIV)   <= 0x003F))
 
-
 typedef struct
 {
-
     adv_tim_cap_en_t            adv_tim_cap_en;             /*!< Specifies the adv timer capture enable status.
                                                             This parameter can be a value of adv_tim_cap_en_t */
 
@@ -295,8 +275,7 @@ typedef struct
 
     uint16_t                    adv_tim_trig_value;         /*!< Specifies the adv timer trig value.
                                                             The parameter range can be referred to IS_TIMER_TRIG_VALUE*/
-} adv_tim_init_t_def;
-
+}adv_tim_init_t_def;
 
             //Advanced Timer init and config
 void        hal_adv_tim_init(uint32_t adv_tim_x_base,adv_tim_init_t_def* adv_tim_init);             
@@ -327,8 +306,7 @@ uint16_t    hal_adv_tim_get_comp_a(uint32_t adv_tim_x_base);
 uint8_t     hal_adv_tim_get_cap_dege(uint32_t adv_tim_x_base);
 uint8_t     hal_adv_tim_get_clock_div(uint32_t adv_tim_x_base);
 
-void hal_adv_tim_init(uint32_t channel, adv_tim_init_t_def* adv_tim_init) {
-    uint32_t adv_tim_x_base = get_adv_timer_base(channel);
+uint32_t get_adv_timer_base(uint32_t channel);  // <- Add this line here
 
             //interrupt
 void        hal_adv_tim_it_cfg(uint32_t adv_tim_x_base,adv_tim_it_flag_t adv_tim_it_flag,hal_en_t en);
@@ -346,4 +324,3 @@ void        hal_adv_tim_clr_status_flag(uint32_t adv_tim_x_base,adv_tim_status_f
 
 
 /**************************************END OF FILE********************************************/
-
