@@ -12,7 +12,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "hal/hal_adv_timer.h"
 
-void hal_adv_tim_init(uint32_t adv_tim_x_base,adv_tim_init_t_def* adv_tim_init)
+uint32_t get_adv_timer_base(uint32_t channel) {
+    switch(channel) {
+        case 0: return ADV_TIMER_0_BASE;
+        case 1: return ADV_TIMER_1_BASE;
+        case 2: return ADV_TIMER_2_BASE;
+        case 3: return ADV_TIMER_3_BASE;
+        case 4: return ADV_TIMER_4_BASE;
+        case 5: return ADV_TIMER_5_BASE;
+        default: return 0; // Invalid channel
+    }
+}
+
+uint32_t timer_base = get_adv_timer_base(pwm_channel);  // pwm_channel is the PWM channel number you are working with
+hal_adv_tim_init(timer_base, &timer_init_structure);
+
 {   
     /* check the parameters */
     hal_assert(IS_ADV_TIMER_ALL_PERIPH(adv_tim_x_base));
