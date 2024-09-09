@@ -11,11 +11,14 @@
 #include "ln_compiler.h"
 #include "ln_utils.h"
 #include "utils/system_parameter.h"
+#include <stdbool.h>	// for bool "g_STA_static_IP"
 
 #define TCPIP_PKT_SIZE_MAX              (NETIF_MTU + PBUF_LINK_HLEN)//max in/output pocket size = MTU + LINK_HEAD_LEN
 
 #define IF_NAME_STA "ST" // Only support two ascii characters
 #define IF_NAME_AP  "AP" // Only support two ascii characters
+
+extern bool g_STA_static_IP;
 
 typedef struct {
     struct netif              nif;
@@ -269,7 +272,9 @@ int netdev_set_state(netif_idx_t nif_idx, netdev_state_t state)
             netif_set_link_callback(nif, sta_netif_link_changed_cb);
 
             netifapi_dhcp_stop(nif);
-            netifapi_dhcp_start(nif);
+            if (! g_STA_static_IP) {
+            	netifapi_dhcp_start(nif);
+            }
         }
         else
         {
