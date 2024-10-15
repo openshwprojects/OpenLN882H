@@ -12,6 +12,18 @@
 /* Includes ------------------------------------------------------------------*/
 #include "hal/hal_adv_timer.h"
 
+uint32_t get_adv_timer_base(uint32_t channel) {
+    switch(channel) {
+        case 0: return ADV_TIMER_0_BASE;
+        case 1: return ADV_TIMER_1_BASE;
+        case 2: return ADV_TIMER_2_BASE;
+        case 3: return ADV_TIMER_3_BASE;
+        case 4: return ADV_TIMER_4_BASE;
+        case 5: return ADV_TIMER_5_BASE;
+        default: return 0; // Invalid channel
+    }
+}
+
 void hal_adv_tim_init(uint32_t adv_tim_x_base,adv_tim_init_t_def* adv_tim_init)
 {   
     /* check the parameters */
@@ -351,7 +363,6 @@ void hal_adv_tim_set_inv_b(uint32_t adv_tim_x_base,uint8_t value)
     pwm_invb_setf(adv_tim_x_base,value);
 }
 
-
 void hal_adv_tim_set_trig_value(uint32_t adv_tim_x_base,uint16_t value)
 {
     /* check the parameters */
@@ -402,7 +413,6 @@ uint8_t hal_adv_tim_get_clock_div(uint32_t adv_tim_x_base)
     hal_assert(IS_ADV_TIMER_ALL_PERIPH(adv_tim_x_base));
     return pwm_div_getf(adv_tim_x_base);
 }
-
 
 uint8_t hal_adv_tim_get_cap_dege(uint32_t adv_tim_x_base)
 {
@@ -1201,6 +1211,7 @@ uint8_t hal_adv_tim_get_status_flag(uint32_t adv_tim_x_base,adv_tim_status_flag_
                 case ADV_TIMER_STATUS_FLAG_CMPB_RAW:
                     status_flag = pwm_isrr5_cmpb_getf(ADV_TIMER_IT_BASE);
                     break;
+                    
                 default:
                     break;
             }
@@ -1219,7 +1230,7 @@ void hal_adv_tim_clr_status_flag(uint32_t adv_tim_x_base,adv_tim_status_flag_t a
     hal_assert(IS_ADV_TIMER_ALL_PERIPH(adv_tim_x_base));
     hal_assert(IS_ADV_TIM_IT_FLAG(adv_tim_status_flag));
 
-    // only writting 1 to the interrupt state raw rigister can clear the status flag
+    // only writting 1 to the interrupt state raw rigister can clear the it flag
     switch (adv_tim_x_base)
     {
         case ADV_TIMER_0_BASE:
@@ -1360,6 +1371,7 @@ void hal_adv_tim_clr_status_flag(uint32_t adv_tim_x_base,adv_tim_status_flag_t a
 
                 case ADV_TIMER_STATUS_FLAG_CMPB_RAW:
                     pwm_isrr_set(ADV_TIMER_IT_BASE,8 << 20);
+                    break;
                     
                 default:
                     break;
@@ -1372,6 +1384,5 @@ void hal_adv_tim_clr_status_flag(uint32_t adv_tim_x_base,adv_tim_status_flag_t a
     }
 }
 
-/************************END OF FILE*******************************/
 
-
+/**************************************END OF FILE********************************************/

@@ -19,7 +19,6 @@
 #include "hal/hal_common.h"
 #include "reg_adv_timer.h"
 
-
 #define ADV_TIMER_IT_BASE  (PWM_BASE + 0x20 * 0)
 #define ADV_TIMER_0_BASE   (PWM_BASE + 0x20 * 1)
 #define ADV_TIMER_1_BASE   (PWM_BASE + 0x20 * 2)
@@ -33,7 +32,6 @@
                                          ((PERIPH) == ADV_TIMER_2_BASE)  || ((PERIPH) == ADV_TIMER_3_BASE)   ||  \
                                          ((PERIPH) == ADV_TIMER_4_BASE)  || ((PERIPH) == ADV_TIMER_5_BASE))     
 
-
 typedef enum
 {
     ADV_TIMER_CAP_DIS       = 0,     
@@ -41,7 +39,6 @@ typedef enum
 }adv_tim_cap_en_t;
 
 #define IS_TIMER_CAP_EN(EN)   (((EN) == ADV_TIMER_CAP_DIS) || ((EN) == ADV_TIMER_CAP_EN))
-
 
 typedef enum
 {
@@ -51,7 +48,6 @@ typedef enum
 
 #define IS_TIMER_TIMER_EN(EN) (((EN) == ADV_TIMER_TIMER_DIS) || ((EN) == ADV_TIMER_TIMER_EN))
 
-
 typedef enum
 {
     ADV_TIMER_DEAD_DIS      = 0,     
@@ -60,7 +56,6 @@ typedef enum
 
 #define IS_TIMER_DEAD_EN(EN)  (((EN) == ADV_TIMER_DEAD_DIS) || ((EN) == ADV_TIMER_DEAD_EN))
 
-
 typedef enum
 {
     ADV_TIMER_CHA_DIS       = 0,     
@@ -68,7 +63,6 @@ typedef enum
 }adv_tim_cha_en_t;
 
 #define IS_TIMER_CHA_EN(EN)  (((EN) == ADV_TIMER_CHA_DIS) || ((EN) == ADV_TIMER_CHA_EN))
-
 
 typedef enum
 {
@@ -135,7 +129,6 @@ typedef enum
 
 #define IS_TIMER_TRG_CLR_EN(EN)    (((EN) == ADV_TIMER_TRG_CLR_DIS) || ((EN) == ADV_TIMER_TRG_CLR_EN))
 
-
 typedef enum
 {
     ADV_TIMER_TRG_SEL_TIM_0         = 0,     
@@ -149,7 +142,6 @@ typedef enum
 #define IS_TIMER_TRG_SEL(SEL)    (((SEL) == ADV_TIMER_TRG_SEL_TIM_0) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_1)  || \
                                     ((SEL) == ADV_TIMER_TRG_SEL_TIM_2) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_3)  || \
                                     ((SEL) == ADV_TIMER_TRG_SEL_TIM_4) || ((SEL) == ADV_TIMER_TRG_SEL_TIM_5))
-
 
 typedef enum
 {
@@ -171,7 +163,6 @@ typedef enum
 
 #define IS_TIMER_CNT_MODE(MODE)       (((MODE) == ADV_TIMER_CNT_MODE_INC) || ((MODE) == ADV_TIMER_CNT_MODE_DEC) || ((MODE) == ADV_TIMER_CNT_MODE_BOTH))
 
-
 typedef enum
 {
     ADV_TIMER_CHB_INV_DIS     = 0,     
@@ -188,8 +179,6 @@ typedef enum
 
 #define IS_TIMER_CHA_INV_EN(EN)    (((EN) == ADV_TIMER_CHA_INV_DIS) || ((EN) == ADV_TIMER_CHA_INV_EN))
 
-
-
 typedef enum
 {
     //isrr
@@ -200,7 +189,6 @@ typedef enum
 }adv_tim_status_flag_t;
 
 #define IS_ADV_TIM_STATUS_FLAG(FLAG)        (( FLAG >= 0) && ( FLAG >= 7 ))
-
 
 typedef enum
 {
@@ -213,8 +201,6 @@ typedef enum
 
 #define IS_ADV_TIM_IT_FLAG(FLAG)        (( FLAG <= 3 ))
 
-
-
 #define IS_TIMER_DEAD_GAP(GAP)         (((GAP)   <= 0x0FFF))
 #define IS_TIMER_LOAD_VALUE(VALUE)     (((VALUE) <= 0xFFFF))
 #define IS_TIMER_CMPA_VALUE(VALUE)     (((VALUE) <= 0xFFFF))
@@ -222,10 +208,8 @@ typedef enum
 #define IS_TIMER_TRIG_VALUE(VALUE)     (((VALUE) <= 0xFFFF))
 #define IS_TIMER_CLK_DIV(DIV)          (((DIV)   <= 0x003F))
 
-
 typedef struct
 {
-
     adv_tim_cap_en_t            adv_tim_cap_en;             /*!< Specifies the adv timer capture enable status.
                                                             This parameter can be a value of adv_tim_cap_en_t */
 
@@ -293,7 +277,6 @@ typedef struct
                                                             The parameter range can be referred to IS_TIMER_TRIG_VALUE*/
 }adv_tim_init_t_def;
 
-
             //Advanced Timer init and config
 void        hal_adv_tim_init(uint32_t adv_tim_x_base,adv_tim_init_t_def* adv_tim_init);             
 void        hal_adv_tim_deinit(void);
@@ -323,6 +306,8 @@ uint16_t    hal_adv_tim_get_comp_a(uint32_t adv_tim_x_base);
 uint8_t     hal_adv_tim_get_cap_dege(uint32_t adv_tim_x_base);
 uint8_t     hal_adv_tim_get_clock_div(uint32_t adv_tim_x_base);
 
+uint32_t get_adv_timer_base(uint32_t channel);  // <- Add this line here
+
             //interrupt
 void        hal_adv_tim_it_cfg(uint32_t adv_tim_x_base,adv_tim_it_flag_t adv_tim_it_flag,hal_en_t en);
 uint8_t     hal_adv_tim_get_it_flag(uint32_t adv_tim_x_base,adv_tim_it_flag_t adv_tim_it_flag);
@@ -330,9 +315,6 @@ void        hal_adv_tim_clr_it_flag(uint32_t adv_tim_x_base,adv_tim_it_flag_t ad
 
 uint8_t     hal_adv_tim_get_status_flag(uint32_t adv_tim_x_base,adv_tim_status_flag_t adv_tim_status_flag);
 void        hal_adv_tim_clr_status_flag(uint32_t adv_tim_x_base,adv_tim_status_flag_t adv_tim_status_flag);
-
-
-
 
 #ifdef __cplusplus
 }
