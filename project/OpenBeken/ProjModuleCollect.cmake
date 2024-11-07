@@ -119,6 +119,8 @@ set(MCU_SRC
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_wdt.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_trng.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_gpio.c
+    ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_dma.c
+    ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_ws2811.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_interrupt.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_clock.c
     ${MCU_LN882X_DIR}/driver_${CHIP_SERIAL}/hal/hal_misc.c
