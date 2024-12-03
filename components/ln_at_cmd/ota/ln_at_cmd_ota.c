@@ -143,7 +143,7 @@ static int ota_persistent_write(const char *buf, const int32_t buf_len)
         temp4k_offset += buf_len - part_len;
     }
 
-    if (temp4k_offset >= (SECTOR_SIZE_4KB - 1) ) {
+    if (temp4k_offset >= (SECTOR_SIZE_4KB) ) {
         // write to flash
         LOG(LOG_LVL_INFO, "write at flash: 0x%08x\r\n", flash_ota_start_addr + flash_ota_offset);
         

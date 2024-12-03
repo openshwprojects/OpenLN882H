@@ -165,7 +165,7 @@ struct user_svc_desc g_user_svc_desc_tab[DATA_TRANS_SVR_MAX] = {
             .svr_uuid_len   = 16,
             .svr_uuid       = DATA_TRANS_1ST_SVR_UUID,
             .att_count      = sizeof(data_trans_1st_atts_db)/sizeof(data_trans_1st_atts_db[0]),
-            .att_desc       = &data_trans_1st_atts_db,
+            .att_desc       = (ln_attm_desc_t *)&data_trans_1st_atts_db,
         },
         .ccc = 0,
     },
@@ -175,7 +175,7 @@ struct user_svc_desc g_user_svc_desc_tab[DATA_TRANS_SVR_MAX] = {
             .svr_uuid_len   = 2,
             .svr_uuid       = DATA_TRANS_2ND_SVR_UUID,
             .att_count      = sizeof(data_trans_2nd_atts_db)/sizeof(data_trans_2nd_atts_db[0]),
-            .att_desc        = &data_trans_2nd_atts_db,
+            .att_desc        = (ln_attm_desc_t *)&data_trans_2nd_atts_db,
         },
         .ccc = 0
     }

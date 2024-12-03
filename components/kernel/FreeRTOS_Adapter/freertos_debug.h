@@ -39,41 +39,40 @@ extern "C" {
         arch_breakpoint(0); \
     } while (0)
 
-#define OS_SYSLOG(...)    \
-    do {                          \
-        log_printf(__VA_ARGS__);  \
-    } while (0)
+
 #define OS_ABORT()      sys_abort()
-#define OS_PANIC()      exception_panic(__FILE__, __func__, __LINE__)
 
 /* Define (sn)printf formatters for some types */
 #define OS_BASETYPE_F   "ld"
 #define OS_HANDLE_F     "p"
 #define OS_TIME_F       "u"
 
-#define OS_LOG(flags, ...)  \
-    do {                            \
-        if (flags)                  \
-            OS_SYSLOG(__VA_ARGS__);  \
+#define OS_LOG(flags, ...)            \
+    do {                              \
+        if (flags)                    \
+            log_printf(__VA_ARGS__);  \
     } while (0)
 
 #define OS_DBG(...)     OS_LOG(OS_DBG_ON, "[os] "__VA_ARGS__)
 #define OS_WARN(...)    OS_LOG(OS_WARN_ON, "[os WARN] "__VA_ARGS__)
-#define OS_ERR(...)                         \
-    do {                                            \
-        OS_LOG(OS_ERR_ON, "[os ERR] %s():%d, ",  \
-               __func__, __LINE__, __VA_ARGS__);          \
-        if (OS_ABORT_ON)                            \
-            OS_ABORT();                             \
+#define OS_ERR(...)                                                  \
+    do {                                                             \
+        OS_LOG(OS_ERR_ON, "[os ERR] %s():%d, ", __func__, __LINE__); \
+        OS_LOG(OS_ERR_ON,  __VA_ARGS__);                             \
+        if (OS_ABORT_ON)                                             \
+            OS_ABORT();                                              \
     } while (0)
 
-#define OS_HANDLE_ASSERT(exp, handle)               \
-    if (OS_HANDLE_CHECK && !(exp)) {                \
-        OS_ERR("handle %"OS_HANDLE_F"\r\n", handle);\
-        return OS_E_PARAM;                          \
+
+#define OS_HANDLE_ASSERT(exp, handle)                                \
+    if (OS_HANDLE_CHECK && !(exp)) {                                 \
+        OS_LOG(OS_ERR_ON, "[os ERR] %s():%d, ", __func__, __LINE__); \
+        OS_LOG(OS_ERR_ON,  "handle %p\r\n", handle);                 \
+        if (OS_ABORT_ON)                                             \
+            OS_ABORT();                                              \
+        return OS_E_PARAM;                                           \
     }
 
-extern void exception_panic(const char *file, const char *func, const int line);
 
 #ifdef __cplusplus
 }

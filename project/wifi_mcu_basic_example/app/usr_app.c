@@ -54,8 +54,8 @@ char g_softap_ssid[SSID_MAX_LEN]    = DEFAULT_SSID_PREFIX;
 char g_softap_pwd[PASSWORD_MAX_LEN] = "12345678";
 
 wifi_sta_connect_t connect = {
-    .ssid    = "A_Murphy",
-    .pwd     = "ZJT123zjt",
+    .ssid    = "TP-LINK_C0DE",
+    .pwd     = "123456789000",
     .bssid   = NULL,
     .psk_value = NULL,
 };
@@ -72,7 +72,7 @@ wifi_softap_cfg_t ap_cfg = {
     .bssid           = mac_addr,
     .ext_cfg = {
         .channel         = 6,
-        .authmode        = WIFI_AUTH_WPA_WPA2_PSK,//WIFI_AUTH_OPEN,
+        .authmode        = WIFI_AUTH_WPA2_PSK,//WIFI_AUTH_OPEN,
         .ssid_hidden     = 0,
         .beacon_interval = 100,
         .psk_value = NULL,

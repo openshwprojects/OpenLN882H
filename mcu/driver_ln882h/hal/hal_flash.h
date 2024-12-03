@@ -14,6 +14,7 @@
 /****************************  Manufacturer ID Define  ************************/
 #define TH25Q16HB    0xEB
 #define GD25WQ16E    0xC8
+#define GT25Q16B_MID 0xC4
 
 /****************************  Data types and Macros  ************************/
 #define FLASH_QUAD_READ_DUMMY_CLOCKS    8

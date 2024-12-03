@@ -76,7 +76,7 @@ wifi_softap_cfg_t ap_cfg = {
     .bssid           = mac_addr,
     .ext_cfg = {
         .channel         = 6,
-        .authmode        = WIFI_AUTH_WPA_WPA2_PSK,//WIFI_AUTH_OPEN,
+        .authmode        = WIFI_AUTH_WPA2_PSK,//WIFI_AUTH_OPEN,
         .ssid_hidden     = 0,
         .beacon_interval = 100,
         .psk_value = NULL,
@@ -283,10 +283,8 @@ static void temp_cal_app_task_entry(void *params)
 
         cnt++;
         if ((cnt % 60) == 0) {
-            LOG(LOG_LVL_INFO, "adc raw: %4d, temp_IC: %4d\r\n",
-                    curr_adc, (int16_t)(25 + (curr_adc - 770) / 2.54f));
-            LOG(LOG_LVL_INFO, "Total:%d; Free:%ld;\r\n", 
-                    OS_HeapSizeGet(), OS_GetFreeHeapSize());
+            LOG(LOG_LVL_INFO, "adc raw: %4d, temp_IC: %4d\r\n", curr_adc, (int16_t)(25 + (curr_adc - 770) / 2.54f));
+            LOG(LOG_LVL_INFO, "Total:%d; Free:%ld;\r\n",  OS_HeapSizeGet(), OS_GetFreeHeapSize());
         }
     }
 }
