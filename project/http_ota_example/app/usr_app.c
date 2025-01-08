@@ -46,8 +46,8 @@ char g_softap_ssid[SSID_MAX_LEN]    = DEFAULT_SSID_PREFIX;
 char g_softap_pwd[PASSWORD_MAX_LEN] = "12345678";
 
 wifi_sta_connect_t connect = {
-    .ssid    = "A_Murphy",
-    .pwd     = "ZJT123zjt",
+    .ssid    = "TP-LINK_XXX",
+    .pwd     = "1234567890",
     .bssid   = NULL,
     .psk_value = NULL,
 };

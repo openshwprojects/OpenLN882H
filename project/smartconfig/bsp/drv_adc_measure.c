@@ -7,7 +7,9 @@ void drv_adc_init(void)
     memset(&adc_init, 0, sizeof(adc_init_t_def));
     adc_init.adc_ch        = ADC_CH0;
     adc_init.adc_conv_mode = ADC_CONV_MODE_CONTINUE;
-    adc_init.adc_presc     = 0xFF;                             
+    adc_init.adc_presc     = 0xFF;
+    adc_init.adc_ov_smp_ratio    = ADC_OVER_SAMPLING_RATIO_X8;
+    adc_init.adc_ov_smp_ratio_en = ADC_OVER_SAMPLING_EN_STATUS_BIT0;
     hal_adc_init(ADC_BASE, &adc_init);
         
     hal_adc_en(ADC_BASE, HAL_ENABLE);

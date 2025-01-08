@@ -56,6 +56,7 @@ __STATIC_INLINE int OS_IsISRContext(void)
 /* memory */
 #include <stdlib.h>
 #define OS_Malloc(l)         pvPortMalloc(l)
+#define OS_Realloc(p, l)     pvPortRealloc(p, l)
 #define OS_Free(p)           vPortFree(p)
 #define OS_GetFreeHeapSize()        xPortGetFreeHeapSize()
 

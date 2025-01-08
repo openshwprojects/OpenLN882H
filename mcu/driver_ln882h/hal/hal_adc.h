@@ -142,7 +142,7 @@ typedef enum
 {
     ADC_OVER_SAMPLING_RATIO_X2       = 0,        
     ADC_OVER_SAMPLING_RATIO_X4       = 1,        
-    ADC_OVER_SAMPLING_RATIO_X5       = 2,        
+    ADC_OVER_SAMPLING_RATIO_X8       = 2,        
     ADC_OVER_SAMPLING_RATIO_X16      = 3,        
     ADC_OVER_SAMPLING_RATIO_X32      = 4,        
     ADC_OVER_SAMPLING_RATIO_X64      = 5,        
