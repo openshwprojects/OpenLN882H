@@ -50,3 +50,20 @@ int OS_HeapSizeGet(void)
 {
     return HEAP0_LEN;
 }
+
+#if defined(__CC_ARM)
+void *$Sub$$malloc(size_t size)
+{
+    return OS_Malloc(size);
+}
+
+void *$Sub$$realloc(void *mem, size_t newsize)
+{
+    return OS_Realloc(mem, newsize);
+}
+
+void $Sub$$free(void *addr)
+{
+    OS_Free(addr);
+}
+#endif

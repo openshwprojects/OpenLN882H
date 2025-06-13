@@ -215,7 +215,7 @@ static void sta_connected(void)
         event_cb[WIFI_MGR_EVENT_STA_CONNECTED](NULL);
     }
     // Cleanup scan results
-    wifi_manager_cleanup_scan_results();
+    //wifi_manager_cleanup_scan_results();
 }
 
 static void sta_disconnected(void)

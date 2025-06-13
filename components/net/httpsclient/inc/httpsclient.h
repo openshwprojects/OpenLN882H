@@ -10,19 +10,19 @@
 #include "httpsclient_wrapper.h"
 
 #define FIELD_URL_HOST_MAX_LEN                   (256)
-#define FIELD_URL_PATH_MAX_LEN                   (256 * 2)
+#define FIELD_URL_PATH_MAX_LEN                   256//(256 * 2)
 
-#define FIELD_REQUEST_CONTENT_TYPE_MAX_LEN       (256 * 2)
-#define FIELD_REQUEST_LOCATION_MAX_LEN           (256)
-#define FIELD_REQUEST_REFERRER_MAX_LEN           (256)
-#define FIELD_REQUEST_COOKIE_MAX_LEN             (256)
-#define FIELD_REQUEST_BOUNDARY_MAX_LEN           (256)
+#define FIELD_REQUEST_CONTENT_TYPE_MAX_LEN       8//(256 * 2)
+#define FIELD_REQUEST_LOCATION_MAX_LEN           8//(256)
+#define FIELD_REQUEST_REFERRER_MAX_LEN           8//(256)
+#define FIELD_REQUEST_COOKIE_MAX_LEN             8//(256)
+#define FIELD_REQUEST_BOUNDARY_MAX_LEN           8//(256)
 
-#define FIELD_RESPONSE_CONTENT_TYPE_MAX_LEN      (256)
-#define FIELD_RESPONSE_LOCATION_MAX_LEN          (256)
-#define FIELD_RESPONSE_REFERRER_MAX_LEN          (256)
-#define FIELD_RESPONSE_COOKIE_MAX_LEN            (256)
-#define FIELD_RESPONSE_BOUNDARY_MAX_LEN          (256)
+#define FIELD_RESPONSE_CONTENT_TYPE_MAX_LEN      128//(256)
+#define FIELD_RESPONSE_LOCATION_MAX_LEN          8//(256)
+#define FIELD_RESPONSE_REFERRER_MAX_LEN          8//(256)
+#define FIELD_RESPONSE_COOKIE_MAX_LEN            8//(256)
+#define FIELD_RESPONSE_BOUNDARY_MAX_LEN          8//(256)
 
 #define FIELD_HTTP_RECV_BUF_MAX_LEN              (1024 * 2)
 // NOTE: in case the buffer is overflow.
@@ -169,8 +169,8 @@ extern "C" {
     int  http_get_with_callback(HTTP_INFO* hi, char* url_str, http_get_cb cbFunc);
     int  http_get_ext(HTTP_INFO* hi, char* url_str, http_get_cb cbFunc, const char *usr_header);
 
-    int  http_post(HTTP_INFO* hi, char* url_str, char* data, char* response, int size);
-    int http_post_ext(HTTP_INFO *hi, char *url, char *data, http_get_cb cbFunc, const char *usr_header);
+    int  http_post(HTTP_INFO *hi, char *url, char *header_ext, char *body, int body_len, char *rsp_buf, int rsp_buf_len);
+    int  http_post_ext(HTTP_INFO *hi, char *url, char *data, http_get_cb cbFunc, const char *usr_header);
 
     int  http_parse(HTTP_INFO* hi);
     void http_dump_err_msg(void);
