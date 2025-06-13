@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "mbedtls/net_sockets.h"
+#include "utils/debug/log.h"
 
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
@@ -67,6 +68,35 @@ int mbedtls_net_connect( mbedtls_net_context *ctx, const char *host, const char 
             continue;
         }
 
+#if 1
+    int keepalive = 1;   //enable
+    int keepidle  = 10;  //units: s
+    int keepintvl = 5;   //units: s
+    int keepcnt   = 8;   //retry count
+    if (setsockopt(ctx->fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive)) != 0) {
+        LOG(LOG_LVL_ERROR, "[%s-%d]ssl(fd=%d) set SO_KEEPALIVE failed.\r\n", __func__, __LINE__, ctx->fd);
+    } else {
+        LOG(LOG_LVL_INFO, "[%s-%d]ssl(fd=%d) set SO_KEEPALIVE keepalive:%d\r\n", __func__, __LINE__, ctx->fd, keepalive);
+    }
+
+    if (setsockopt(ctx->fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepidle, sizeof(keepidle)) != 0) {
+        LOG(LOG_LVL_ERROR, "[%s-%d]ssl(fd=%d) set TCP_KEEPIDLE failed.\r\n", __func__, __LINE__, ctx->fd);
+    } else {
+        LOG(LOG_LVL_INFO, "[%s-%d]ssl(fd=%d) set TCP_KEEPIDLE keepidle:%d\r\n", __func__, __LINE__, ctx->fd, keepidle);
+    }
+
+    if (setsockopt(ctx->fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepintvl, sizeof(keepintvl)) != 0) {
+        LOG(LOG_LVL_ERROR, "[%s-%d]ssl(fd=%d) set TCP_KEEPINTVL failed.\r\n", __func__, __LINE__, ctx->fd);
+    } else {
+        LOG(LOG_LVL_INFO, "[%s-%d]ssl(fd=%d) set TCP_KEEPINTVL keepintvl:%d\r\n", __func__, __LINE__, ctx->fd, keepintvl);
+    }
+
+    if (setsockopt(ctx->fd, IPPROTO_TCP, TCP_KEEPCNT, &keepcnt, sizeof(keepcnt)) != 0) {
+        LOG(LOG_LVL_ERROR, "[%s-%d]ssl(fd=%d) set TCP_KEEPCNT failed.\r\n", __func__, __LINE__, ctx->fd);
+    } else {
+        LOG(LOG_LVL_INFO, "[%s-%d]ssl(fd=%d) set TCP_KEEPCNT keepcnt:%d\r\n", __func__, __LINE__, ctx->fd, keepcnt);
+    }
+#endif
         do
         {
             ret = connect( ctx->fd, cur->ai_addr, cur->ai_addrlen );
