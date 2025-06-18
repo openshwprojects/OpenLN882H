@@ -119,8 +119,11 @@
     #define AWS_MQTT_PORT    ( 8883 )
 #endif
 
-#ifndef NETWORK_BUFFER_SIZE
-    #define NETWORK_BUFFER_SIZE    ( 1024U )
+#ifndef NETWORK_RX_BUFFER_SIZE
+    #define NETWORK_RX_BUFFER_SIZE    ( 1024U )
+#endif
+#ifndef NETWORK_TX_BUFFER_SIZE
+    #define NETWORK_TX_BUFFER_SIZE    ( 1024U )
 #endif
 
 #ifndef OS_NAME
@@ -188,12 +191,12 @@
 /**
  * @brief The maximum back-off delay (in milliseconds) for retrying connection to server.
  */
-#define CONNECTION_RETRY_MAX_BACKOFF_DELAY_MS    ( 5000U )
+#define CONNECTION_RETRY_MAX_BACKOFF_DELAY_MS    ( 1000U )
 
 /**
  * @brief The base back-off delay (in milliseconds) to use for connection retry attempts.
  */
-#define CONNECTION_RETRY_BACKOFF_BASE_MS         ( 500U )
+#define CONNECTION_RETRY_BACKOFF_BASE_MS         ( 300U )
 
 /**
  * @brief Timeout for receiving CONNACK packet in milli seconds.
@@ -250,7 +253,7 @@
  *  absence of sending any other Control Packets, the Client MUST send a
  *  PINGREQ Packet.
  */
-#define MQTT_KEEP_ALIVE_INTERVAL_SECONDS    ( 60U )
+#define MQTT_KEEP_ALIVE_INTERVAL_SECONDS    ( 20U )
 
 /**
  * @brief Delay between MQTT publishes in seconds.
@@ -347,7 +350,8 @@ static MQTTSubscribeInfo_t pGlobalSubscriptionList[ 1 ];
 /**
  * @brief The network buffer must remain valid for the lifetime of the MQTT context.
  */
-static uint8_t buffer[ NETWORK_BUFFER_SIZE ];
+static uint8_t g_mqtt_network_rx_buffer[ NETWORK_RX_BUFFER_SIZE ];
+static uint8_t g_mqtt_network_tx_buffer[ NETWORK_TX_BUFFER_SIZE ];
 
 /**
  * @brief Status of latest Subscribe ACK;
@@ -1304,8 +1308,10 @@ static int initializeMqtt( MQTTContext_t * pMqttContext,
     transport.recv = aws_ada_tls_recv;
 
     /* Fill the values for network buffer. */
-    networkBuffer.pBuffer = buffer;
-    networkBuffer.size = NETWORK_BUFFER_SIZE;
+    networkBuffer.rx_pBuffer = g_mqtt_network_rx_buffer;
+    networkBuffer.rx_size    = NETWORK_RX_BUFFER_SIZE;
+    networkBuffer.tx_pBuffer = g_mqtt_network_tx_buffer;
+    networkBuffer.tx_size    = NETWORK_TX_BUFFER_SIZE;
 
     /* Initialize MQTT library. */
     mqttStatus = MQTT_Init( pMqttContext,

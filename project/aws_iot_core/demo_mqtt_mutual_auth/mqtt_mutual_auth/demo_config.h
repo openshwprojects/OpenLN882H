@@ -162,7 +162,8 @@
 /**
  * @brief Size of the network buffer for MQTT packets.
  */
-#define NETWORK_BUFFER_SIZE       ( 1024U )
+#define NETWORK_RX_BUFFER_SIZE    ( 1024U )
+#define NETWORK_TX_BUFFER_SIZE    ( 1024U )
 
 /**
  * @brief The name of the operating system that the application is running on.

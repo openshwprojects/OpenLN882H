@@ -8,6 +8,7 @@
 
 #include "debug/log.h"
 
+#define TRANSPORT_SEND_RECV_TIMEOUT_MS ( 2000 ) //Transport timeout in milliseconds for transport send and receive.
 
 static void aws_ada_debug(void *ctx, int level,
         const char *file, int line, const char *str)
@@ -65,10 +66,7 @@ static int aws_ada_tls_config(NetworkContext_t * nw_context)
 {
     int ret = 0;
 
-    ret = mbedtls_ssl_config_defaults(&nw_context->tls.conf,
-                                    MBEDTLS_SSL_IS_CLIENT,
-                                    MBEDTLS_SSL_TRANSPORT_STREAM,
-                                    MBEDTLS_SSL_PRESET_DEFAULT);
+    ret = mbedtls_ssl_config_defaults(&nw_context->tls.conf, MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
     if(ret != 0) {
         return ret;
     }
@@ -83,58 +81,47 @@ static int aws_ada_tls_config(NetworkContext_t * nw_context)
         }
     }
 
-    mbedtls_ssl_conf_authmode(&nw_context->tls.conf,
-                        MBEDTLS_SSL_VERIFY_REQUIRED);
-    mbedtls_ssl_conf_rng(&nw_context->tls.conf,
-                        mbedtls_ctr_drbg_random, &nw_context->tls.ctr_drbg);
-    mbedtls_ssl_conf_cert_profile(&nw_context->tls.conf,
-                        &nw_context->tls.certProfile);
-    mbedtls_ssl_conf_read_timeout(&nw_context->tls.conf, 5000);
+    // mbedtls_ssl_conf_max_frag_len(&nw_context->tls.conf, MBEDTLS_SSL_MAX_FRAG_LEN_4096); //MBEDTLS_SSL_MAX_FRAGMENT_LENGTH
+    mbedtls_ssl_conf_authmode(&nw_context->tls.conf, MBEDTLS_SSL_VERIFY_NONE); //MBEDTLS_SSL_VERIFY_NONE, MBEDTLS_SSL_VERIFY_OPTIONAL, MBEDTLS_SSL_VERIFY_REQUIRED
+    mbedtls_ssl_conf_rng(&nw_context->tls.conf, mbedtls_ctr_drbg_random, &nw_context->tls.ctr_drbg);
+    mbedtls_ssl_conf_cert_profile(&nw_context->tls.conf, &nw_context->tls.certProfile);
+    mbedtls_ssl_conf_read_timeout(&nw_context->tls.conf, TRANSPORT_SEND_RECV_TIMEOUT_MS);
 
     mbedtls_ssl_conf_dbg(&nw_context->tls.conf, aws_ada_debug, NULL);           /* set debug log output api */
     mbedtls_debug_set_threshold(AWS_ADA_MBEDTLS_DEBUG_LOG_LEVEL);               /* set log output level: 0 - 5 */
 
-    ret = mbedtls_ctr_drbg_seed(&nw_context->tls.ctr_drbg,
-                        mbedtls_entropy_func, &nw_context->tls.entropy, NULL, 0);
+    ret = mbedtls_ctr_drbg_seed(&nw_context->tls.ctr_drbg, mbedtls_entropy_func, &nw_context->tls.entropy, NULL, 0);
     if( ret != 0 ) {
         LOG(LOG_LVL_ERROR, "mbedtls_ctr_drbg_seed error, return -0x%x\r\n", -ret);
         return ret;
     }
 
-    ret = mbedtls_x509_crt_parse(&nw_context->tls.cacert,
-                        (const unsigned char *)nw_context->server_root_ca_pem,
-                        nw_context->server_root_ca_pem_size);
-    if( ret != 0 ) {
-        LOG(LOG_LVL_ERROR, "parse root ca cert error, return -0x%x\r\n", -ret);
-        return ret;
+    /* parse [root_ca_cert] */
+    if (nw_context->server_root_ca_pem != NULL) {
+        ret = mbedtls_x509_crt_parse(&nw_context->tls.cacert, (const uint8_t*)nw_context->server_root_ca_pem, nw_context->server_root_ca_pem_size);
+        if( ret != 0 ) {
+            LOG(LOG_LVL_ERROR, "parse root ca cert error, return -0x%x\r\n", -ret);
+            return ret;
+        }
+        mbedtls_ssl_conf_ca_chain(&nw_context->tls.conf, &nw_context->tls.cacert, NULL);
     }
 
-    mbedtls_ssl_conf_ca_chain(&nw_context->tls.conf,
-                        &nw_context->tls.cacert, NULL);
-
-    ret = mbedtls_x509_crt_parse(&nw_context->tls.clicert,
-                        (const unsigned char *)nw_context->client_cert_pem,
-                        nw_context->client_cert_pem_size);
-    if(ret != 0) {
-        LOG(LOG_LVL_ERROR, "parse client cert error, return -0x%x\r\n", -ret);
-        return ret;
+    /* parse [client_cert] [client_key] */
+    if (nw_context->client_cert_pem != NULL && nw_context->client_key_pem != NULL) {
+        ret = mbedtls_x509_crt_parse(&nw_context->tls.clicert, (const uint8_t*)nw_context->client_cert_pem, nw_context->client_cert_pem_size);
+        if(ret != 0) {
+            LOG(LOG_LVL_ERROR, "parse client cert error, return -0x%x\r\n", -ret);
+            return ret;
+        }
+        ret = mbedtls_pk_parse_key(&nw_context->tls.pkey, (const uint8_t*)nw_context->client_key_pem, nw_context->client_key_pem_size, NULL, 0);
+        if (ret != 0) {
+            LOG(LOG_LVL_ERROR, "parse client key error, return -0x%x\r\n", -ret);
+            return ret;
+        }
+        mbedtls_ssl_conf_own_cert(&(nw_context->tls.conf), &(nw_context->tls.clicert), &(nw_context->tls.pkey));
     }
 
-    ret = mbedtls_pk_parse_key(&nw_context->tls.pkey,
-                        (const unsigned char *)nw_context->client_key_pem,
-                        nw_context->client_key_pem_size,
-                        "", 0);
-    if (ret != 0) {
-        LOG(LOG_LVL_ERROR, "parse client key error, return -0x%x\r\n", -ret);
-        return ret;
-    }
-
-    (void)mbedtls_ssl_conf_own_cert(&(nw_context->tls.conf),
-                        &(nw_context->tls.clicert),
-                        &(nw_context->tls.pkey));
-
-    if ((ret = mbedtls_ssl_set_hostname(&nw_context->tls.ssl,
-                        (const char *)nw_context->hostname)) != 0) {
+    if ((ret = mbedtls_ssl_set_hostname(&nw_context->tls.ssl, (const char *)nw_context->hostname)) != 0) {
         LOG(LOG_LVL_ERROR, "set hostname error, return -0x%x\r\n", -ret);
         return ret;
     }
@@ -145,9 +132,7 @@ static int aws_ada_tls_config(NetworkContext_t * nw_context)
         return ret;
     }
 
-    mbedtls_ssl_set_bio(&nw_context->tls.ssl, &nw_context->tls.ssl_fd,
-                        mbedtls_net_send, mbedtls_net_recv,
-                        mbedtls_net_recv_timeout);
+    mbedtls_ssl_set_bio(&nw_context->tls.ssl, &nw_context->tls.ssl_fd, mbedtls_net_send, mbedtls_net_recv, mbedtls_net_recv_timeout);
     return 0;
 }
 
@@ -173,27 +158,20 @@ aws_ada_tls_status_e aws_ada_tls_conn(NetworkContext_t *nw_context)
     }
 
     snprintf(port_string, sizeof(port_string), "%u", nw_context->port);
-    LOG(LOG_LVL_INFO, "-- tls conn <%s:%s> --\r\n",
-                    nw_context->hostname, port_string);
+    LOG(LOG_LVL_INFO, "-- tls conn <%s:%s> --\r\n", nw_context->hostname, port_string);
 
-    ret = mbedtls_net_connect(&nw_context->tls.ssl_fd,
-                    nw_context->hostname,
-                    (const char *)port_string,
-                    MBEDTLS_NET_PROTO_TCP);
+    ret = mbedtls_net_connect(&nw_context->tls.ssl_fd, nw_context->hostname, (const char *)port_string, MBEDTLS_NET_PROTO_TCP);
     if(ret != 0) {
-        LOG(LOG_LVL_ERROR, "Failed to conn <%s:%s>, return -0x%x\r\n",
-                    nw_context->hostname, port_string, -ret);
+        LOG(LOG_LVL_ERROR, "Failed to conn <%s:%s>, return -0x%x\r\n", nw_context->hostname, port_string, -ret);
         status = AWS_ADA_TLS_STATUS_CONN_FAIL;
         goto __exit;
     }
 
     do {
         ret = mbedtls_ssl_handshake(&nw_context->tls.ssl);
-    } while(ret == MBEDTLS_ERR_SSL_WANT_READ ||
-            ret == MBEDTLS_ERR_SSL_WANT_WRITE);
+    } while(ret == MBEDTLS_ERR_SSL_WANT_READ || ret == MBEDTLS_ERR_SSL_WANT_WRITE);
 
-    if ((ret != 0) ||
-        (mbedtls_ssl_get_verify_result(&nw_context->tls.ssl) != 0)) {
+    if ((ret != 0) || (mbedtls_ssl_get_verify_result(&nw_context->tls.ssl) != 0)) {
         LOG(LOG_LVL_ERROR, "TLS handshake failed! return -0x%x\r\n", -ret);
         status = AWS_ADA_TLS_HANDSHAKE_ERROR;
         goto __exit;
@@ -213,17 +191,13 @@ int aws_ada_tls_disconn(NetworkContext_t *nw_context)
     ret = mbedtls_ssl_close_notify(&nw_context->tls.ssl);
     if (ret == 0) {
         LOG(LOG_LVL_INFO, "Closing TLS connection: TLS close-notify sent.\r\n");
-    } else if ((ret == MBEDTLS_ERR_SSL_WANT_READ) &&
-                (ret == MBEDTLS_ERR_SSL_WANT_WRITE)) {
+    } else if ((ret == MBEDTLS_ERR_SSL_WANT_READ) && (ret == MBEDTLS_ERR_SSL_WANT_WRITE)) {
         /* WANT_READ and WANT_WRITE can be ignored. Logging for debugging purposes. */
-        LOG(LOG_LVL_INFO,
-                "TLS close-notify sent; received %s as the TLS status "
-                "which can be ignored for close-notify.\r\n",
+        LOG(LOG_LVL_INFO, "TLS close-notify sent; received %s as the TLS status " "which can be ignored for close-notify.\r\n",
                 (ret == MBEDTLS_ERR_SSL_WANT_READ ) ? "WANT_READ" : "WANT_WRITE");
     } else {
         /* Ignore the WANT_READ and WANT_WRITE return values. */
-        LOG(LOG_LVL_ERROR,
-                "Failed to send TLS close-notify: mbedTLSError= -%x.\r\n", ret);
+        LOG(LOG_LVL_ERROR, "Failed to send TLS close-notify: mbedTLSError= -%x.\r\n", ret);
     }
 
     aws_ada_tls_deinit(nw_context);
@@ -242,6 +216,8 @@ int32_t aws_ada_tls_send(NetworkContext_t *nw_context, const void *data, size_t 
         ret = 0;
     } else if (ret < 0) {
         LOG(LOG_LVL_ERROR, "mbedtls_client_write data error, return -0x%x\r\n", -ret);
+    } else {
+//        hexdump(1, "mq_send", (void *)data, ret);
     }
 
     return ret;
@@ -259,6 +235,8 @@ int32_t aws_ada_tls_recv(NetworkContext_t *nw_context, void *data, size_t data_l
         ret = 0;
     } else if (ret < 0) {
         LOG(LOG_LVL_ERROR, "mbedtls_client_read data error, return -0x%x\r\n", -ret);
+    } else {
+//        hexdump(1, "mq_recv", (void *)data, ret);
     }
 
     return ret;
