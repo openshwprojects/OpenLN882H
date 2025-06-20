@@ -175,7 +175,7 @@ static void mqtt_disconnected_callback(void)
 
 mqtt_client_cfg_t  mqttcfg = {
     .hostname  = "broker.emqx.io",
-    .port      = 8883,
+    .port      = 1883,//8883,
     .keepalive = 30,
 
     .client_id = "client_id_usr_0001",

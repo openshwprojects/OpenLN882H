@@ -75,4 +75,7 @@
  */
 #define MQTT_PINGRESP_TIMEOUT_MS      ( 8000U )
 
+
+#define TRANSPORT_USE_TLS    (1)
+
 #endif /* ifndef CORE_MQTT_CONFIG_H_ */

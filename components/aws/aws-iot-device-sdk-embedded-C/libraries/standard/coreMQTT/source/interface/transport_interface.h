@@ -97,11 +97,11 @@
  * <br><br>
  * <b>Example code:</b>
  * @code{c}
- * int32_t myNetworkRecvImplementation( NetworkContext_t * pNetworkContext,
+ * int myNetworkRecvImplementation( NetworkContext_t * pNetworkContext,
  *                                      void * pBuffer,
  *                                      size_t bytesToRecv )
  * {
- *     int32_t bytesReceived = 0;
+ *     int bytesReceived = 0;
  *     bool callTlsRecvFunc = true;
  *
  *     // For a single byte read request, check if data is available on the network.
@@ -150,11 +150,11 @@
  * <br><br>
  * <b>Example code:</b>
  * @code{c}
- * int32_t myNetworkSendImplementation( NetworkContext_t * pNetworkContext,
+ * int myNetworkSendImplementation( NetworkContext_t * pNetworkContext,
  *                                      const void * pBuffer,
  *                                      size_t bytesToSend )
  * {
- *     int32_t bytesSent = 0;
+ *     int bytesSent = 0;
  *     bytesSent = TLSSend( pNetworkContext->tlsContext,
  *                          pBuffer,
  *                          bytesToSend,
@@ -216,7 +216,7 @@ typedef struct NetworkContext NetworkContext_t;
  * has occurred.
  */
 /* @[define_transportrecv] */
-typedef int32_t ( * TransportRecv_t )( NetworkContext_t * pNetworkContext,
+typedef int ( * TransportRecv_t )( NetworkContext_t * pNetworkContext,
                                        void * pBuffer,
                                        size_t bytesToRecv );
 /* @[define_transportrecv] */
@@ -238,10 +238,14 @@ typedef int32_t ( * TransportRecv_t )( NetworkContext_t * pNetworkContext,
  * has occurred.
  */
 /* @[define_transportsend] */
-typedef int32_t ( * TransportSend_t )( NetworkContext_t * pNetworkContext,
+typedef int ( * TransportSend_t )( NetworkContext_t * pNetworkContext,
                                        const void * pBuffer,
                                        size_t bytesToSend );
 /* @[define_transportsend] */
+
+
+typedef int ( * TransportConn_t )( NetworkContext_t * pNetworkContext );
+typedef int ( * TransportDisconn_t )( NetworkContext_t * pNetworkContext );
 
 /**
  * @transportstruct
@@ -250,6 +254,8 @@ typedef int32_t ( * TransportSend_t )( NetworkContext_t * pNetworkContext,
 /* @[define_transportinterface] */
 typedef struct TransportInterface
 {
+    TransportConn_t    connect;
+    TransportDisconn_t disconnect;
     TransportRecv_t recv;               /**< Transport receive interface. */
     TransportSend_t send;               /**< Transport send interface. */
     NetworkContext_t * pNetworkContext; /**< Implementation-defined network context. */

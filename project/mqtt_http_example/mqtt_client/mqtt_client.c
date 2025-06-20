@@ -78,6 +78,10 @@ static mqtt_client_cfg_t *mqtt_cli_cfg = NULL;
 
 int mqtt_evt_msg_recv(void *mqtt_evt, uint32_t timeout);
 
+static MQTTContext_t    g_mqttContext = { 0 };
+static NetworkContext_t g_networkContext = { 0 };
+static uint8_t g_mqtt_connected_callback_excuse_flag = 0;
+int mqtt_evt_queue_reset(void);
 
 /*-----------------------------------------------------------*/
 /**
@@ -98,21 +102,18 @@ static uint16_t globalSubscribePacketIdentifier = 0U;
 
 /**
  * @brief Packet Identifier generated when Unsubscribe request was sent to the broker;
- * it is used to match received Unsubscribe ACK to the transmitted unsubscribe
- * request.
+ * it is used to match received Unsubscribe ACK to the transmitted unsubscribe request.
  */
 static uint16_t globalUnsubscribePacketIdentifier = 0U;
 
 /**
  * @brief Array to keep the outgoing publish messages.
- * These stored outgoing publish messages are kept until a successful ack
- * is received.
+ * These stored outgoing publish messages are kept until a successful ack is received.
  */
 static PublishPackets_t outgoingPublishPackets[ MAX_OUTGOING_PUBLISHES ] = { 0 };
 
 /**
- * @brief Array to keep subscription topics.
- * Used to re-subscribe to topics that failed initial subscription attempts.
+ * @brief Array to keep subscription topics. Used to re-subscribe to topics that failed initial subscription attempts.
  */
 static MQTTSubscribeInfo_t pGlobalSubscriptionList[ 1 ];
 
@@ -124,8 +125,7 @@ static uint8_t g_mqtt_network_tx_buffer[ NETWORK_TX_BUFFER_SIZE ];
 
 /**
  * @brief Status of latest Subscribe ACK;
- * it is updated every time the callback function processes a Subscribe ACK
- * and accounts for subscription to a single topic.
+ * it is updated every time the callback function processes a Subscribe ACK and accounts for subscription to a single topic.
  */
 static MQTTSubAckStatus_t globalSubAckStatus = MQTTSubAckFailure;
 
@@ -158,7 +158,6 @@ static uint32_t generateRandomNumber(void) {
 static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext, MQTTContext_t * pMqttContext, bool * pClientSessionPresent, bool * pBrokerSessionPresent )
 {
     int returnStatus = EXIT_FAILURE;
-    aws_ada_tls_status_e tls_status;
     BackoffAlgorithmStatus_t backoffAlgStatus = BackoffAlgorithmSuccess;
     BackoffAlgorithmContext_t reconnectParams;
     uint16_t nextRetryBackOff;
@@ -183,13 +182,12 @@ static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext
     /* Initialize reconnect attempts and interval */
     BackoffAlgorithm_InitializeParams( &reconnectParams, CONNECTION_RETRY_BACKOFF_BASE_MS, CONNECTION_RETRY_MAX_BACKOFF_DELAY_MS, CONNECTION_RETRY_MAX_ATTEMPTS );
 
-    /* Attempt to connect to MQTT broker. If connection fails, retry after
-     * a timeout. Timeout value will exponentially increase until maximum attempts are reached. */
+    /* Attempt to connect to MQTT broker. If connection fails, retry after a timeout. Timeout value will exponentially increase until maximum attempts are reached. */
     do
     {
-        LogInfo( ( "Establishing a TLS session to %.*s:%d.", strlen(pNetworkContext->hostname), pNetworkContext->hostname, pNetworkContext->port ) );
-        tls_status = aws_ada_tls_conn(pNetworkContext);
-        if( tls_status == AWS_ADA_TLS_STATUS_SUCCESS )
+        LogInfo( ( "Establishing a TCP/TLS session to %.*s:%d.", strlen(pNetworkContext->hostname), pNetworkContext->hostname, pNetworkContext->port ) );
+
+        if( 0 == (g_mqttContext.transportInterface.connect)(pNetworkContext) )//transport_tls_conn(pNetworkContext);
         {
             /* A clean MQTT session needs to be created, if there is no session saved in this MQTT client. */
             createCleanSession = ( *pClientSessionPresent == true ) ? false : true;
@@ -197,10 +195,9 @@ static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext
             /* Sends an MQTT Connect packet using the established TLS session, then waits for connection acknowledgment (CONNACK) packet. */
             returnStatus = establishMqttSession( pMqttContext, createCleanSession, pBrokerSessionPresent );
 
-            if( returnStatus == EXIT_FAILURE )
-            {
+            if( returnStatus == EXIT_FAILURE ) {
                 /* End TLS session, then close TCP connection. */
-                ( void ) aws_ada_tls_disconn( pNetworkContext );
+                (g_mqttContext.transportInterface.disconnect)(pNetworkContext);
             }
         }
 
@@ -216,8 +213,7 @@ static int connectToServerWithBackoffRetries( NetworkContext_t * pNetworkContext
             }
             else if( backoffAlgStatus == BackoffAlgorithmSuccess )
             {
-                LogWarn( ( "Connection to the broker failed. Retrying connection "
-                           "after %hu ms backoff.", ( unsigned short ) nextRetryBackOff ) );
+                LogWarn( ( "Connection to the broker failed. Retrying connection " "after %hu ms backoff.", ( unsigned short ) nextRetryBackOff ) );
                 Clock_SleepMs( nextRetryBackOff );
             }
         }
@@ -594,9 +590,11 @@ static int initializeMqtt( MQTTContext_t * pMqttContext, NetworkContext_t * pNet
      * For this demo, TCP sockets are used to send and receive data
      * from network. Network context is SSL context for OpenSSL.*/
     transport.pNetworkContext = pNetworkContext;
-    transport.send = aws_ada_tls_send;
-    transport.recv = aws_ada_tls_recv;
-
+    transport.send       = transport_send;
+    transport.recv       = transport_recv;
+    transport.connect    = transport_conn;
+    transport.disconnect = transport_disconn;
+    
     /* Fill the values for network buffer. */
     networkBuffer.rx_pBuffer = g_mqtt_network_rx_buffer;
     networkBuffer.rx_size    = NETWORK_RX_BUFFER_SIZE;
@@ -732,10 +730,6 @@ static int subscribePublishLoop_v2( MQTTContext_t * pMqttContext )
 }
 
 /*-----------------------------------------------------------*/
-static MQTTContext_t    g_mqttContext = { 0 };
-static NetworkContext_t g_networkContext = { 0 };
-static uint8_t g_mqtt_connected_callback_excuse_flag = 0;
-int mqtt_evt_queue_reset(void);
 
 void aws_demo_main(void *argv )
 {
@@ -784,7 +778,7 @@ void aws_demo_main(void *argv )
                 mqtt_cli_cfg->is_connected = 1;
                 returnStatus = subscribePublishLoop_v2( &g_mqttContext );
 
-                aws_ada_tls_disconn( &g_networkContext );
+                (g_mqttContext.transportInterface.disconnect)( &g_networkContext );
                 g_mqtt_connected_callback_excuse_flag = 0;
                 mqtt_cli_cfg->is_connected = 0;
             }
