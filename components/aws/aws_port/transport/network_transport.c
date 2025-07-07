@@ -365,7 +365,7 @@ static int transport_tcp_conn(NetworkContext_t *nw_context)
             continue;
         }
 
-        fd = n->tcp.fd;
+        n->tcp.fd = fd;
         tcp_keepalive_config(fd);
         if (connect(fd, cur->ai_addr, cur->ai_addrlen) == 0) {
             ret = TP_RET_SUCCESS;
@@ -395,7 +395,7 @@ static int transport_tcp_disconn(NetworkContext_t *nw_context)
     rc = shutdown(n->tcp.fd, 2);
     if (0 != rc) {
         LogError( ("tcp shutdown error: %s", STRING_PTR_PRINT_SANITY_CHECK(strerror(errno))) );
-        return TP_ERR_TCP_DISCONN;
+        //return TP_ERR_TCP_DISCONN;
     }
 
     rc = close(n->tcp.fd);
@@ -471,7 +471,7 @@ static int transport_tcp_send(NetworkContext_t *nw_context, const void *data, si
                 }
 
                 ret = TP_ERR_TCP_WRITE_FAIL;
-                LogError( ("send fail: %s", STRING_PTR_PRINT_SANITY_CHECK(strerror(errno))) );
+//                LogError( ("send fail: %s", STRING_PTR_PRINT_SANITY_CHECK(strerror(errno))) );
                 break;
             }
         }
@@ -528,7 +528,7 @@ static int transport_tcp_recv(NetworkContext_t *nw_context, void *data, size_t d
                     LogError( ("EINTR be caught") );
                     continue;
                 }
-                LogError( ("recv error: %s", STRING_PTR_PRINT_SANITY_CHECK(strerror(errno))) );
+//                LogError( ("recv error: %s", STRING_PTR_PRINT_SANITY_CHECK(strerror(errno))) );
                 err_code = TP_ERR_TCP_READ_FAIL;
                 break;
             }
