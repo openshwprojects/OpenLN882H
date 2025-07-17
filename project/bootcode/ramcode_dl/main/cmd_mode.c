@@ -481,8 +481,7 @@ int bootram_console_stdio_write(char* buf, size_t size)
 int cmd_flash_dump(bootram_cmd_tbl_t* cmdtbl, int argc, char* argv[])
 {
     int      ret = -1;
-    uint8_t  page_buffer[FLASH_PAGE_SIZE + 1];
-    uint32_t flash_offset = 0, size = 0, page_num = 0, i = 0;
+    uint32_t flash_offset = 0, size = 0;
 
     if (argv[1]) {
         flash_offset = strtoul(argv[1], NULL, 0);
@@ -490,23 +489,26 @@ int cmd_flash_dump(bootram_cmd_tbl_t* cmdtbl, int argc, char* argv[])
     if (argv[2]) {
         size = strtoul(argv[2], NULL, 0);
     }
-    size = MIN(FALSH_SIZE_MAX - flash_offset, size);
-    if (size > 0) {
-        page_num = size / FLASH_PAGE_SIZE;
-        for (i = 0; i < page_num; i++) {
-            bootram_flash_read(flash_offset + i * FLASH_PAGE_SIZE, FLASH_PAGE_SIZE, page_buffer);
-            bootram_hexdump(BOOTRAM_CONSOLE_OUTPUT, i * FLASH_PAGE_SIZE, page_buffer,
-                            FLASH_PAGE_SIZE);
+    uint32_t readLen = 0x200;
+    uint8_t buf[readLen+2];
+    //uint32_t fi = bootram_flash_info();
+    //uint32_t flash_size = ((1 << ((fi & 0xFF) - 0x11)) / 8) * 0x100000;
+    //size = MIN(flash_size - flash_offset, size);
+    if (size > 0 && (size % readLen == 0))
+    {
+        //char sbuf[3] = {0};
+        //sprintf(sbuf, "\r\n");
+        //bootram_serial_write(&sbuf, 3);
+        ln_block_delayms(4000);
+        for(; flash_offset < flash_offset + size; flash_offset += readLen)
+        {
+          hal_flash_read(flash_offset, readLen, buf);
+          uint16_t crc = crc16_ccitt(buf, readLen);
+          memcpy(&buf[readLen], &crc, sizeof(crc));
+          bootram_serial_write(buf, readLen + 2);
+          size -= readLen;
+          memset(buf, 0, readLen + 2);
         }
-        if (size % FLASH_PAGE_SIZE) {
-            bootram_flash_read(flash_offset + i * FLASH_PAGE_SIZE, size % FLASH_PAGE_SIZE,
-                               page_buffer);
-            bootram_hexdump(BOOTRAM_CONSOLE_OUTPUT, i * FLASH_PAGE_SIZE, page_buffer,
-                            size % FLASH_PAGE_SIZE);
-        }
-
-        echo_result(1);
-
         return 0;
     }
     else {
@@ -635,7 +637,7 @@ int cmd_download_baudrate(bootram_cmd_tbl_t* cmdtbl, int argc, char* argv[])
     uint32_t baudrate = CFG_UART_BAUDRATE_CONSOLE;
     char*    endptr   = NULL;
     if (argv[1]) {
-        baudrate = strtoul(argv[1], &endptr, 10);
+        baudrate = strtoul(argv[1], &endptr, 0);
         bootram_serial_setbaudrate(baudrate);
         bootram_serial_flush();
         return 0;
