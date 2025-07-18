@@ -9,7 +9,7 @@
 
 #include "./FreeRTOS_Adapter/freertos_common.h"
 #include "task.h"
-#include "ln_misc.h"
+#include "utils/ln_misc.h"
 
 #ifdef __cplusplus
 extern "C" {

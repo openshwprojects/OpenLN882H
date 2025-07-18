@@ -3,7 +3,7 @@
 #define CFG_USING_CM_BACKTRACE
 
 #ifdef CFG_USING_CM_BACKTRACE
-#include "utils/debug/CmBackTrace/cm_backtrace.h"
+#include "utils/debug/CmBacktrace/cm_backtrace.h"
 #endif /* CFG_USING_CM_BACKTRACE */
 
 #include <stdbool.h>

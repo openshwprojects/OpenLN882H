@@ -280,6 +280,7 @@ int netdev_set_state(netif_idx_t nif_idx, netdev_state_t state)
             if (! g_STA_static_IP) {
             	netifapi_dhcp_start(nif);
             }
+#endif
         }
         else
         {
