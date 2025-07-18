@@ -525,3 +525,52 @@ const HeapRegion_t *pxHeapRegion;
 	xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 );
 }
 
+
+void* pvPortRealloc( void *pv,  size_t xWantedSize )
+{
+	BlockLink_t *pxLink;
+	unsigned char *puc = ( unsigned char * ) pv;
+
+	if( pv )
+	{
+		if( !xWantedSize )
+		{
+			vPortFree( pv );
+			return NULL;
+		}
+
+		void *newArea = pvPortMalloc( xWantedSize );
+		if( newArea )
+		{
+			/* The memory being freed will have an xBlockLink structure immediately
+				before it. */
+			puc -= xHeapStructSize;
+
+			/* This casting is to keep the compiler from issuing warnings. */
+			pxLink = ( void * ) puc;
+
+			int oldSize =  (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
+			int copySize = ( oldSize < xWantedSize ) ? oldSize : xWantedSize;
+			memcpy( newArea, pv, copySize );
+
+			vTaskSuspendAll();
+			{
+				/* Add this block to the list of free blocks. */
+				pxLink->xBlockSize &= ~xBlockAllocatedBit;
+				xFreeBytesRemaining += pxLink->xBlockSize;
+				prvInsertBlockIntoFreeList( ( ( BlockLink_t * ) pxLink ) );
+			}
+			xTaskResumeAll();
+			return newArea;
+		}
+	}
+	else if( xWantedSize )
+		return pvPortMalloc( xWantedSize );
+	else
+		return NULL;
+
+	return NULL;
+}
+
+
+

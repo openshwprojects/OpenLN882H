@@ -583,7 +583,18 @@ uint8_t hal_flash_read_mid(void)
     buf[0] = 0; // Manufacturer ID
     buf[1] = 0; // Memory Type (device identification high 8 bit)
     buf[2] = 0; // Capacity    (device identification low 8 bit)
+
+#if (FLASH_XIP == 1)
+    GLOBAL_INT_DISABLE();
+    flash_cache_disable();
+#endif
+
     hal_qspi_standard_read_byte(buf, 3, &cmd, sizeof(cmd));
+
+#if (FLASH_XIP == 1)
+    flash_cache_init(0);
+    GLOBAL_INT_RESTORE();
+#endif
     return buf[0];
 }
 

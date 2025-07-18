@@ -17,8 +17,6 @@
 volatile unsigned int random_num[4]; 
 void ln_trng_test(void)
 {
-    
-
     trng_init_t_def trng_init;
     memset(&trng_init,0,sizeof(trng_init));
     trng_init.trng_fast_mode_en_status = TRNG_FAST_MODE_DIS;

@@ -1,12 +1,9 @@
 #include "ln882h.h"
 
-// TODO: cmbacktrace 支持 ARMCC 和 GCC
-#if defined ( __GNUC__ ) && !defined(__ARMCC_VERSION)
 #define CFG_USING_CM_BACKTRACE
-#endif
 
 #ifdef CFG_USING_CM_BACKTRACE
-#include "cm_backtrace.h"
+#include "utils/debug/CmBackTrace/cm_backtrace.h"
 #endif /* CFG_USING_CM_BACKTRACE */
 
 #include <stdbool.h>
@@ -77,142 +74,121 @@ void switch_global_interrupt(hal_en_t enable)
         __disable_irq();
 }
 
-
-#if defined (__ARMCC_VERSION)
-    __asm void NMI_Handler (void)
+#if (defined(__CC_ARM) && (__ARMCC_VERSION < 6000000)) /* ARMCC5 */
+    __asm void fault_handler(void)
     {
+        #ifdef CFG_USING_CM_BACKTRACE
+        IMPORT  cm_backtrace_fault
+        #endif
+     
         MOV    R0, LR
         MOV    R1, SP
-#ifdef CFG_USING_CM_BACKTRACE
+        #ifdef CFG_USING_CM_BACKTRACE
         BL     __cpp(cm_backtrace_fault)
-#endif
-NMI_Fault_Loop
-        B      NMI_Fault_Loop
+        #endif
+        B      .
     }
-
-    __asm void HardFault_Handler (void)
+#elif (defined(__GNUC__) && !defined(__ARMCC_VERSION)) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)) /* GCC or ARMCC6 */
+    static inline void fault_handler(void)
     {
-        MOV    R0, LR
-        MOV    R1, SP
-#ifdef CFG_USING_CM_BACKTRACE
-        BL     __cpp(cm_backtrace_fault)
-#endif
-Hard_Fault_Loop
-        B      Hard_Fault_Loop
-    }
-
-    __asm void MemManage_Handler (void)
-    {
-        MOV    R0, LR
-        MOV    R1, SP
-#ifdef CFG_USING_CM_BACKTRACE
-        BL     __cpp(cm_backtrace_fault)
-#endif
-MM_Fault_Loop
-        B      MM_Fault_Loop
-    }
-
-    __asm void BusFault_Handler (void)
-    {
-        MOV    R0, LR
-        MOV    R1, SP
-#ifdef CFG_USING_CM_BACKTRACE
-        BL     __cpp(cm_backtrace_fault)
-#endif
-Bus_Fault_Loop
-        B      Bus_Fault_Loop
-    }
-
-    __asm void UsageFault_Handler (void)
-    {
-        MOV    R0, LR
-        MOV    R1, SP
-#ifdef CFG_USING_CM_BACKTRACE
-        BL     __cpp(cm_backtrace_fault)
-#endif
-Usage_Fault_Loop
-        B      Usage_Fault_Loop
-    }
-
-    __asm void DebugMon_Handler (void)
-    {
-        MOV    R0, LR
-        MOV    R1, SP
-#ifdef CFG_USING_CM_BACKTRACE
-        BL     __cpp(cm_backtrace_fault)
-#endif
-DBG_Fault_Loop
-        B      DBG_Fault_Loop
-    }
-
-#elif defined ( __GNUC__ )
-
-     void NMI_Handler (void)
-    {
-        #if 0
-       __asm__(" MOV    R0, LR;"
+        __asm__ volatile(
+        "MOV    R0, LR;"
         "MOV    R1, SP;"
-#ifdef CFG_USING_CM_BACKTRACE
-        "BL     _asm_cm_backtrace_fault;"
-#endif
+        #ifdef CFG_USING_CM_BACKTRACE
+        "BL     cm_backtrace_fault;"
+        #endif
         "B   .");
-        #else
-       // another way
-       asm("MOV  R0,LR\n\t"
-            "MOV R1,SP\n\t"
-            "BL cm_backtrace_fault\n\t"
-            "B .\n\t"
-            ::"m"(cm_backtrace_fault):"cc");
-       #endif
     }
-
-    void HardFault_Handler (void)
-    {
-         __asm__("MOV  R0,LR\n\t"
-        "MOV R1,SP\n\t"
-        "BL cm_backtrace_fault\n\t"
-        "B .\n\t"
-        ::"m"(cm_backtrace_fault):"cc");
-    }
-
-    void MemManage_Handler (void)
-    {
-        __asm__("MOV  R0,LR\n\t"
-        "MOV R1,SP\n\t"
-        "BL cm_backtrace_fault\n\t"
-        "B .\n\t"
-        ::"m"(cm_backtrace_fault):"cc");
-    }
-
-    void BusFault_Handler (void)
-    {
-       __asm__("MOV  R0,LR\n\t"
-        "MOV R1,SP\n\t"
-        "BL cm_backtrace_fault\n\t"
-        "B .\n\t"
-        ::"m"(cm_backtrace_fault):"cc");
-    }
-
-    void UsageFault_Handler (void)
-    {
-        __asm__("MOV  R0,LR\n\t"
-        "MOV R1,SP\n\t"
-        "BL cm_backtrace_fault\n\t"
-        "B .\n\t"
-        ::"m"(cm_backtrace_fault):"cc");
-    }
-
-    void DebugMon_Handler (void)
-    {
-        __asm__("MOV  R0,LR\n\t"
-        "MOV R1,SP\n\t"
-        "BL cm_backtrace_fault\n\t"
-        "B .\n\t"
-        ::"m"(cm_backtrace_fault):"cc");
-    }
-#elif defined ( __ICCARM__ )
-    #error "iar compiler!!!"
 #else
     #error "Unsupported compiler!!!"
 #endif
+
+void NMI_Handler (void) {
+    fault_handler();
+}
+
+void HardFault_Handler (void) {
+    fault_handler();
+}
+
+void MemManage_Handler (void) {
+    fault_handler();
+}
+
+void BusFault_Handler (void) {
+    fault_handler();
+}
+
+void UsageFault_Handler (void) {
+    fault_handler();
+}
+
+void DebugMon_Handler (void) {
+    fault_handler();
+}
+
+
+/**********************************************************************************************************/
+/*       if ARMCC MicroLib disable                                                                        */
+/* User code templates for system I/O function retargeting                                                */
+/* Reference: https://www.keil.com/pack/doc/compiler/RetargetIO/html/Retarget_Overview.html#autotoc_md0   */
+/**********************************************************************************************************/
+#if ((!defined(__MICROLIB)) && defined(__ARMCC_VERSION))
+
+  #if (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)) /* ARMCC6 */
+    __ASM (".global __use_no_semihosting");      
+  #elif (defined(__CC_ARM) && (__ARMCC_VERSION < 6000000)) /* ARMCC5 */
+    #pragma import(__use_no_semihosting)             
+    struct __FILE 
+    { 
+        int handle; 
+    }; 
+  #endif
+
+  __asm(".global __ARM_use_no_argv\n\t");
+  
+  #include <rt_sys.h>
+  
+  FILEHANDLE _sys_open(const char * name, int openmode) {
+      return 0;  
+  }
+  void _ttywrch(int ch) {
+      ch = ch;
+  }
+  void _sys_exit(int x) { 
+  	x = x; 
+  } 
+  
+  int fputc(int ch, FILE *f) { 
+      //TODO: uart send ch
+  	return ch;
+  }
+  
+  int _sys_close(FILEHANDLE fh) {
+      return 0; //return success
+  }
+  int _sys_write(FILEHANDLE fh, const unsigned char * buf, unsigned len, int mode) {
+      return 0;   
+  }
+  int _sys_read(FILEHANDLE fh, unsigned char * buf, unsigned len, int mode) {
+      return 0;       
+  }
+  
+  int _sys_istty(FILEHANDLE fh) {
+      return 1; // no interactive device present
+  }
+  int _sys_seek(FILEHANDLE fh, long pos) {
+      return -1; // error
+  }
+  int _sys_ensure(FILEHANDLE fh) {
+      return 0; // success
+  }
+  long _sys_flen(FILEHANDLE fh) {
+      return 0;
+  }
+  
+  char *_sys_command_string(char *cmd, int len){
+      return 0;
+  }
+#endif 
 

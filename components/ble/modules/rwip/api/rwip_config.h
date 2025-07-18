@@ -119,10 +119,10 @@
 ***********************************************************/ 
 // #define  CFG_AOA
 // #define  CFG_AOD
-#define  CFG_CONLESS_CTE_TX
-#define  CFG_CONLESS_CTE_RX
-#define  CFG_CON_CTE_REQ
-#define  CFG_CON_CTE_RSP
+//#define  CFG_CONLESS_CTE_TX
+//#define  CFG_CONLESS_CTE_RX
+//#define  CFG_CON_CTE_REQ
+//#define  CFG_CON_CTE_RSP
 
 /***********************************************************
 * RF config 
@@ -590,11 +590,7 @@
 /// Flag indicating if debug mode is activated or not
 #if defined(CFG_DBG)
     #define RW_DEBUG                        ((BLE_EMB_PRESENT) || (BT_EMB_PRESENT) || (BLE_HOST_PRESENT))
-#if (BLE_EMB_PRESENT || BT_EMB_PRESENT)
-    #define RW_SWDIAG                       1
-#else
     #define RW_SWDIAG                       0
-#endif
     #define KE_PROFILING                    1
 #else
     #define RW_DEBUG                        0

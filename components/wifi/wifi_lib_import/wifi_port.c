@@ -233,29 +233,30 @@ void wlib_aes_decrypt(void *ctx, const uint8_t *ctext, uint8_t *ptext)
 }
 
 /* tx power external compensation */
+#include "hal/hal_flash.h"
 void wlib_get_tx_power_ext_comp_val(int8_t *bgn_pwr, int8_t *b_pwr, int8_t *gn_pwr)
 {
-    uint8_t rd_val1 = 0, rd_val2 = 0, rd_val3 = 0;
+    uint8_t ate_result = 0, rd_val1 = 0, rd_val2 = 0, rd_val3 = 0;
     if (!bgn_pwr || !b_pwr || !gn_pwr) {
         return;
     }
 
-    if (NVDS_ERR_OK != ln_nvds_get_ate_result(&rd_val1)) {
-        return;
+    if (NVDS_ERR_OK != ln_nvds_get_ate_result(&ate_result)) {
+        goto __exit;
     } else {
-        if (rd_val1 != NV9_ATE_RESULT_OK) {
-           return; 
+        if (ate_result != NV9_ATE_RESULT_OK) {
+            goto __exit;
         }
     }
 
     if (NVDS_ERR_OK != ln_nvds_get_tx_power_comp(&rd_val1)) {
-        return;
+        goto __exit;
     }
     if (NVDS_ERR_OK != ln_nvds_get_tx_power_b_comp(&rd_val2)) {
-        return;
+        goto __exit;
     }
     if (NVDS_ERR_OK != ln_nvds_get_tx_power_gn_comp(&rd_val3)) {
-        return;
+        goto __exit;
     }
 
     if (rd_val1 == 0xFF) {
@@ -268,9 +269,15 @@ void wlib_get_tx_power_ext_comp_val(int8_t *bgn_pwr, int8_t *b_pwr, int8_t *gn_p
         rd_val3 = 0;
     }
 
+__exit:
     *bgn_pwr = (int8_t)rd_val1;
-    *b_pwr   = (int8_t)rd_val2;
-    *gn_pwr  = (int8_t)rd_val3;
+    if (GT25Q16B_MID == hal_flash_read_mid()) {
+        *b_pwr   = (int8_t)rd_val2 + 50;
+        *gn_pwr  = (int8_t)rd_val3 + 25;
+    } else {
+        *b_pwr   = (int8_t)rd_val2;
+        *gn_pwr  = (int8_t)rd_val3;
+    }
 }
 
 /* heap memory manager */
@@ -477,10 +484,10 @@ wlib_thread_t wlib_os_thread_creat(const char *name, void *entry, void *arg)
     }
 
     if (strstr(name, "mac")) {
-        priority = OS_PRIORITY_REAL_TIME;
+        priority = WIFI_MAC_TASK_PRIORITY;
         stksize  = WIFI_MAC_TASK_STACK_SIZE;
     } else if (strstr(name, "cfg")) {
-        priority = OS_PRIORITY_NORMAL;
+        priority = WIFI_CFG_TASK_PRIORITY;
         stksize  = WIFI_CFG_TASK_STACK_SIZE;
     } else {
         return NULL;

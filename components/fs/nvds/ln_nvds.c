@@ -291,9 +291,10 @@ int ln_nvds_set_tx_power_comp(uint8_t  val) {
 int ln_nvds_get_tx_power_comp(uint8_t *val) {
     if(ln_fotp_param_is_valid()){
         ln_fotp_get_tx_power_bgn_comp_val(val);
+    } else {
+        ln_nvds_read(NV3_TX_POWER_COMP_OFFST, val, NV3_TX_POWER_COMP_LEN);
     }
-    else
-        return ln_nvds_read(NV3_TX_POWER_COMP_OFFST, val, NV3_TX_POWER_COMP_LEN);
+    return NVDS_ERR_OK;
 }
 
 /* NV4_CHIP_SN_OFFSET, NV4_CHIP_SN_LEN */

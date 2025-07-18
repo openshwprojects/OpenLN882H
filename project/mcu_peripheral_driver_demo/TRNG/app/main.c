@@ -25,7 +25,7 @@ int main (int argc, char* argv[])
     LOG(LOG_LVL_INFO,"ln882H init! \n");
     ln_show_reg_init();
 
-    /****************** 2. RTC 测试***********************/
+    /****************** 2. TRNG 测试***********************/
     trng_init( 10000, data_buf, 100);
 
     for(int i = 0; i < 100; i ++)

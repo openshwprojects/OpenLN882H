@@ -122,25 +122,55 @@ int ln_is_zero_mem(const void *addr, uint32_t size)
     return LN_TRUE;
 }
 
-int ln_generate_true_random_words(uint32_t *words, uint32_t words_len)
+int ln_generate_true_random_16bytes(uint8_t *buf)
 {
-    LN_UNUSED(words_len);
-
-    if(!words && ((((uint32_t)words) % sizeof(uint32_t)) != 0)){
+    if(!buf){
         return LN_FALSE;
     }
 
-//    trng_init_t_def trng_init;
-//    trng_init.fast_mode_en = TRNG_FAST_MODE_DIS;
-//    trng_init.gap = 10;
-//    hal_trng_init(REG_TRNG_BASE, &trng_init);
-//
-//    for (uint32_t i = 0; i < words_len; i++) {
-//        hal_trng_en(REG_TRNG_BASE, HAL_ENABLE);
-//        while(!hal_trng_is_complate(REG_TRNG_BASE));
-//        *words++ = hal_trng_get_data_0_31(REG_TRNG_BASE);
-//    }
+    uint32_t word[4] = {0};
+    trng_init_t_def trng_init;
+    memset(&trng_init, 0, sizeof(trng_init));
+    trng_init.trng_fast_mode_en_status = TRNG_FAST_MODE_DIS;
+    trng_init.trng_gap = 10; //0.625ms
+
+    CRITICAL_SECT_START();
+    hal_trng_init(TRNG_BASE, &trng_init);
+    hal_trng_en(TRNG_BASE, HAL_ENABLE);
+    while(hal_trng_get_en_status(TRNG_BASE) == 1);
+    while(hal_trng_get_it_flag(TRNG_BASE, TRNG_IT_FLAG_TRNG_DONE) == 0);
+    word[0] = hal_trng_get_data_0_31(TRNG_BASE);
+    word[1] = hal_trng_get_data_32_63(TRNG_BASE);
+    word[2] = hal_trng_get_data_64_95(TRNG_BASE);
+    word[3] = hal_trng_get_data_96_127(TRNG_BASE);
+    hal_trng_en(TRNG_BASE, HAL_DISABLE);
+    CRITICAL_SECT_END();
+
+    memcpy(buf, word, 16);
     return LN_TRUE;
+}
+
+uint32_t ln_generate_true_random_word(void)
+{
+    uint32_t word = 0;
+    trng_init_t_def trng_init;
+    memset(&trng_init, 0, sizeof(trng_init));
+    trng_init.trng_fast_mode_en_status = TRNG_FAST_MODE_DIS;
+    trng_init.trng_gap = 10; //0.625ms
+
+    CRITICAL_SECT_START();
+    hal_trng_init(TRNG_BASE, &trng_init);
+    hal_trng_en(TRNG_BASE, HAL_ENABLE);
+    while(hal_trng_get_en_status(TRNG_BASE) == 1);
+    while(hal_trng_get_it_flag(TRNG_BASE, TRNG_IT_FLAG_TRNG_DONE) == 0);
+    word ^= hal_trng_get_data_0_31(TRNG_BASE);
+    word ^= hal_trng_get_data_32_63(TRNG_BASE);
+    word ^= hal_trng_get_data_64_95(TRNG_BASE);
+    word ^= hal_trng_get_data_96_127(TRNG_BASE);
+    hal_trng_en(TRNG_BASE, HAL_DISABLE);
+    CRITICAL_SECT_END();
+
+    return word;
 }
 
 int ln_generate_random_mac(uint8_t *addr)
@@ -156,7 +186,9 @@ int ln_generate_random_mac(uint8_t *addr)
     trng_init_t_def trng_init;
     memset(&trng_init, 0, sizeof(trng_init));
     trng_init.trng_fast_mode_en_status = TRNG_FAST_MODE_DIS;
-    trng_init.trng_gap = 10;
+    trng_init.trng_gap = 10; //0.625ms
+
+    CRITICAL_SECT_START();
     hal_trng_init(TRNG_BASE, &trng_init);
     hal_trng_en(TRNG_BASE, HAL_ENABLE);
     while(hal_trng_get_en_status(TRNG_BASE) == 1);
@@ -183,7 +215,8 @@ int ln_generate_random_mac(uint8_t *addr)
     CLR_BIT(addr[0],0);
     CLR_BIT(addr[0],1);
 #endif
-    hal_trng_en(TRNG_BASE,HAL_DISABLE);
+    hal_trng_en(TRNG_BASE, HAL_DISABLE);
+    CRITICAL_SECT_END();
     return 0;
 }
 

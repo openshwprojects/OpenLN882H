@@ -39,6 +39,8 @@ typedef enum
     
     PWM_CHA_10 = 10,
     PWM_CHA_11 = 11,
+
+    PWM_CHA_AMOUNT,
 }pwm_channel_t;
 
 
@@ -50,7 +52,7 @@ typedef enum
 
 void     pwm_init(uint32_t freq, float duty,pwm_channel_t pwm_channel_num,gpio_port_t gpio_port,gpio_pin_t gpio_pin);
 void     pwm_start(pwm_channel_t pwm_channel_num);
-void     pwm_set_duty(float duty, pwm_channel_t pwm_channel_num);
+void     pwm_set_duty(pwm_channel_t pwm_channel_num,float duty);
 float    pwm_get_duty(pwm_channel_t pwm_channel_num);
 void     pwm_set_freq(pwm_channel_t pwm_channel_num,uint32_t period);
 

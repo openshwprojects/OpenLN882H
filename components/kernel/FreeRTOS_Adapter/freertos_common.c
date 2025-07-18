@@ -6,7 +6,7 @@
 #include "proj_config.h"
 #include "freertos_common.h"
 
-#ifdef __CC_ARM
+#if defined(__CC_ARM) || (defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050))
     extern unsigned int Image$$HEAP_SPACE0$$ZI$$Base;
     extern unsigned int Image$$HEAP_SPACE0$$ZI$$Limit;
     #define HEAP0_START                      (&Image$$HEAP_SPACE0$$ZI$$Base)
@@ -50,3 +50,20 @@ int OS_HeapSizeGet(void)
 {
     return HEAP0_LEN;
 }
+
+#if defined(__CC_ARM)
+void *$Sub$$malloc(size_t size)
+{
+    return OS_Malloc(size);
+}
+
+void *$Sub$$realloc(void *mem, size_t newsize)
+{
+    return OS_Realloc(mem, newsize);
+}
+
+void $Sub$$free(void *addr)
+{
+    OS_Free(addr);
+}
+#endif

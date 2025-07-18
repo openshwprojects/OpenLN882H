@@ -8,14 +8,6 @@
  * @copyright Copyright (c) 2021 Shanghai Lightning Semiconductor Technology Co. Ltd
  * 
  */
-
-/*
-        GPIO测试说明
-        
-        1. 
-*/
-
- 
  
 #include "hal_common.h"
 #include "hal_gpio.h"
@@ -23,26 +15,28 @@
 #include "ln_gpio_test.h"
 #include "utils/debug/log.h"
 
+/*
+    GPIO测试说明说明：
+
+    1. A5引脚每隔500ms翻转一次
+    
+    2. B5 B6设置了下降沿中断，一旦检测到会有日志打印
+                   
+*/
+
 void ln_gpio_test()
 {
     gpio_init_t_def gpio_init;
     memset(&gpio_init,0,sizeof(gpio_init));        //清零结构体
 
-//    /* 引脚输出测试 */
-//    gpio_init.dir   = GPIO_OUTPUT;                 //配置GPIO方向，输入或者输出
-//    gpio_init.pin   = GPIO_PIN_5;                  //配置GPIO引脚号
-//    gpio_init.speed = GPIO_HIGH_SPEED;             //设置GPIO速度
-//    gpio_init.mode  = GPIO_MODE_DIGITAL;           //设置引脚为数字引脚
-//    gpio_init.pull  = GPIO_PULL_UP;                //设置引脚为上拉
-//    hal_gpio_init(GPIOB_BASE,&gpio_init);          //初始化GPIO
-//    
-//    /* 引脚输出测试 */
-//    gpio_init.dir   = GPIO_OUTPUT;                 //配置GPIO方向，输入或者输出
-//    gpio_init.pin   = GPIO_PIN_7;                  //配置GPIO引脚号
-//    gpio_init.speed = GPIO_HIGH_SPEED;             //设置GPIO速度
-//    gpio_init.mode  = GPIO_MODE_DIGITAL;           //设置引脚为数字引脚
-//    gpio_init.pull  = GPIO_PULL_UP;                //设置引脚为上拉
-//    hal_gpio_init(GPIOB_BASE,&gpio_init);          //初始化GPIO
+    /* 引脚输出测试 */
+    gpio_init.dir   = GPIO_OUTPUT;                 //配置GPIO方向，输入或者输出
+    gpio_init.pin   = GPIO_PIN_5;                  //配置GPIO引脚号
+    gpio_init.speed = GPIO_HIGH_SPEED;             //设置GPIO速度
+    gpio_init.mode  = GPIO_MODE_DIGITAL;           //设置引脚为数字引脚
+    gpio_init.pull  = GPIO_PULL_UP;                //设置引脚为上拉
+    hal_gpio_init(GPIOA_BASE,&gpio_init);          //初始化GPIO
+
 
     /* 引脚输入中断测试 */
     gpio_init.dir   = GPIO_INPUT;                  //配置GPIO方向，输入或者输出
@@ -71,7 +65,7 @@ void ln_gpio_test()
     while(1)
     {
         ln_delay_ms(500);
-        //hal_gpio_pin_toggle(GPIOB_BASE,GPIO_PIN_5);    //翻转引脚
+        hal_gpio_pin_toggle(GPIOA_BASE,GPIO_PIN_5);    //翻转引脚
     }
 }
 

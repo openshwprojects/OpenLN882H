@@ -8,6 +8,40 @@
     </tr>
     <tr>
         <td>
+            2024-05-10 18:08:00
+        </td>
+        <td>
+            v2.1_rc2
+        </td>
+        <td>
+            9b387c11
+        </td>
+        <td>
+            1. WIFI Lib 版本更新为 v1.4.0 <br />
+            2. BLE Lib 版本保持 v1.0.5 <br />
+            3. SDK 版本更新为 v2.1_rc2 <br />
+             <br /><b>SDK v2.1_rc2 changelog:</b> <br />
+			1. 修复部分keil工程编译报错的问题。 <br />
+			2. 外设例程新增I2S主机驱动Demo、WS2811驱动Demo和8080 LCD驱动Demo，变更部分外设测试的注释内容和格式 <br />
+			3. 修改编译器相关宏，支持ARMCC6 <br />
+			4. 使用ARM compiler6时，如果不使用MicroLib，重定向system I/O function <br />
+			5. cm_backtrace 更新到 v1.4.2，keil示例工程默认使能cmbacktrace <br />
+			6. 添加PSK快速计算算法（fastpbkdf2），默认不打开。 <br />
+			7. combo_mcu_basic_example示例工程默认关闭AES，降低功耗 <br />
+			8. 示例工程，增加静态IP地址功能，MAC地址使用chip_uuid派生 <br />
+			9. softAP ssid默认：ln-wifi_+MAC地址后2bytes <br /><br />
+             <b>wifi_lib v1.4.0 changelog</b> <br />
+			1. 修改WiFi lib内 log打印描述,与ty保持统一。 <br />
+			2. 增强极端干扰环境下，wifi重传健壮性。 <br />
+			3. wifi协议栈内部不过滤IPv6报文 <br />
+			4. wifi睡眠pre post成对使用的保护 <br />
+			5. WPA3功能宏包裹 <br />
+			6. 针对小信号时（-70以下）动态调整AGC门限 <br />
+			7. 修复在softAP模式下，偶现多个设备同时连接过程中，可能连不上的bug
+        </td>
+    </tr>
+    <tr>
+        <td>
             2023-08-22 10:53:00
         </td>
         <td>

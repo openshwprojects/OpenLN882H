@@ -208,7 +208,7 @@ void hal_adc_init(uint32_t adc_base,adc_init_t_def* adc_init)
             adc_ovsr_setf(adc_base,1);
             break;
 
-        case ADC_OVER_SAMPLING_RATIO_X5:
+        case ADC_OVER_SAMPLING_RATIO_X8:
             adc_ovsr_setf(adc_base,2);
             break;
 
@@ -228,7 +228,8 @@ void hal_adc_init(uint32_t adc_base,adc_init_t_def* adc_init)
             break;
     }
 
-    adc_ovse_setf(adc_base,adc_init->adc_ov_smp_ratio_en);
+    uint8_t ovse_tmp = adc_ovse_getf(adc_base);
+    adc_ovse_setf(adc_base, ovse_tmp | adc_init->adc_ov_smp_ratio_en);
     adc_ht_setf(adc_base,adc_init->adc_ht);
     adc_lt_setf(adc_base,adc_init->adc_lt);
 

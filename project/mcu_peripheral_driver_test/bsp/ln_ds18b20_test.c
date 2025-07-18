@@ -12,13 +12,13 @@
 /*
         DS18B20使用说明：
 
-                    1. 接线说明：
-                                    LN8210               DS18B20
-                                    PB7          ->      DATA
-                                    3.3V         ->      VCC
-                                    GND          ->      GND
-                                    
-·                   2. 等待DS18B20打印Family Code 0x28，则认为初始化成功。
+        1. 接线说明：
+                    LN8210               DS18B20
+                    PB7          ->      DATA
+                    3.3V         ->      VCC
+                    GND          ->      GND
+                    
+        2. 等待DS18B20打印Family Code 0x28，则认为初始化成功。
 */
 
 
