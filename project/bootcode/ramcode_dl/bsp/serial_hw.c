@@ -69,7 +69,7 @@ static void hw_uart0_init(struct SerialHardware *_hw, struct Serial *serial, uin
     hal_uart_en(UART0_BASE, HAL_ENABLE);
 
     hal_uart_it_en(UART0_BASE, USART_IT_RXNE);
-    hal_uart_it_en(UART0_BASE, USART_IT_TXE);
+    //hal_uart_it_en(UART0_BASE, USART_IT_TXE);
     NVIC_EnableIRQ(UART0_IRQn);
 
     //request pin for uart
@@ -90,7 +90,7 @@ static void hw_uart0_cleanup(struct SerialHardware *_hw)
     hw->serial = NULL;                                                          // must be reset to NULL
 }
 
-#if 0
+#if 1
 static void hw_uart_tx_start_polling(struct SerialHardware * _hw)
 {
     uint8_t ch;
@@ -158,7 +158,7 @@ static const struct SerialHardwareVT uart0_vtable =
 {
     .init        = hw_uart0_init,
     .cleanup     = hw_uart0_cleanup,
-    .txStart     = hw_uart_tx_start_isr,//hw_uart_tx_start_polling,//hw_uart_tx_start_isr
+    .txStart     = hw_uart_tx_start_polling,//hw_uart_tx_start_isr
     .txSending   = hw_uart_tx_is_sending,
     .setBaudrate = hw_uart_setBaudrate,
 };

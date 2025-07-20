@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
     hal_flash_init();
     flash_cache_disable();
-
+    ln_runtime_measure_init();
     bootram_ctrl_init();
     bootram_ctrl_loop();
 
