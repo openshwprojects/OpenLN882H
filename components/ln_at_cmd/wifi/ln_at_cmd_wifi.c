@@ -971,9 +971,11 @@ static void output_ap_list(void)
         uint8_t * mac = (uint8_t*)pnode->info.bssid;
         ap_info_t *info = &pnode->info;
 
-        //a good format
-        ln_at_printf("+CWLAP:[%02X:%02X:%02X:%02X:%02X:%02X]enc=%d,ch=%02d,rssi=%3d,ssid:\"%s\"\r\n", \
-        mac[0],mac[1],mac[2],mac[3],mac[4],mac[5],info->authmode,info->channel,info->rssi,info->ssid);
+        //a good format //AT+CWLAP (SSID !=NULL)
+        if(strlen(info->ssid) > 0) {
+            ln_at_printf("+CWLAP:[%02X:%02X:%02X:%02X:%02X:%02X]enc=%d,ch=%02d,rssi=%3d,ssid:\"%s\"\r\n", \
+            mac[0],mac[1],mac[2],mac[3],mac[4],mac[5],info->authmode,info->channel,info->rssi,info->ssid);
+        }
     }
 
     wifi_manager_ap_list_update_enable(LN_TRUE);
@@ -984,8 +986,8 @@ static ln_at_err_t ln_at_exec_scan(const char *name)
     LN_UNUSED(name);
 
     #define CONNECTED_SCAN_TIMES     (6)
-    #define DEFAULT_SCAN_TIMES       (1)
-    #define SCAN_TIMEOUT             (1500)
+    #define DEFAULT_SCAN_TIMES       4//(1)
+    #define SCAN_TIMEOUT             (2000)
 
     int8_t scan_cnt = DEFAULT_SCAN_TIMES;
 
@@ -1008,7 +1010,9 @@ static ln_at_err_t ln_at_exec_scan(const char *name)
         return LN_AT_ERR_COMMON;
     }
 
-    sysparam_sta_scan_cfg_get(&scan_cfg);
+//    sysparam_sta_scan_cfg_get(&scan_cfg);
+    scan_cfg.scan_type = WIFI_SCAN_TYPE_ACTIVE;
+    scan_cfg.scan_time = 30;
 
     //1. creat sem, reg scan complete callback.
     sem_scan = ln_at_sem_create(0, 1);
@@ -1020,6 +1024,7 @@ static ln_at_err_t ln_at_exec_scan(const char *name)
         sta_status == WIFI_STA_STATUS_DISCONNECTING)
     {
         scan_cnt = CONNECTED_SCAN_TIMES;
+        scan_cfg.scan_time = 40;
     }
     LOG(LOG_LVL_INFO, "Scan cnt:%d; scan timeout:%d\r\n", scan_cnt, SCAN_TIMEOUT);
 
@@ -1036,7 +1041,7 @@ static ln_at_err_t ln_at_exec_scan(const char *name)
     wifi_manager_reg_event_callback(WIFI_MGR_EVENT_STA_SCAN_COMPLETE, NULL);
     ln_at_sem_delete(sem_scan);
     sem_scan = NULL;
-    wifi_manager_cleanup_scan_results();
+//    wifi_manager_cleanup_scan_results();
 
     ln_at_printf(LN_AT_RET_OK_STR);
     return LN_AT_ERR_NONE;

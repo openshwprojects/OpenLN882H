@@ -10,33 +10,34 @@
  */
  
 /**
-        SPI从机调试说明：
+    SPI从机调试说明：
+    
+    1. 接线说明：
+
+        LN882H(从机)    STM32(主机)
+        PA10    ->      PA4     -> SPI_CS
+        PA11    ->      PA5     -> SPI_SCK
+        PA12    ->      PA6     -> SPI_MISO
+        PA13    ->      PA7     -> SPI_MOSI
+        GND     ->      GND
+
+    2. CS引脚由SPI_CR1中的NSS和SSM控制，对应控制函数为：
+    
+        SSOE -> hal_spi_ssoe_en();            
+        SSM  -> hal_spi_set_nss(); 
+                
+       通过这两个函数可以设置CS引脚状态：
         
-                    1. 接线说明：
-                                LN882H(从机)    STM32(主机)
-                                PA10    ->      PA4     -> SPI_CS
-                                PA11    ->      PA5     -> SPI_SCK
-                                PA12    ->      PA6     -> SPI_MISO
-                                PA13    ->      PA7     -> SPI_MOSI
-                                GND     ->      GND
-
-                    2. CS引脚由SPI_CR1中的NSS和SSM控制，对应控制函数为：
+        （1） SSM = 1：软件管理CS引脚，从器件的选择信息由SPI_CR1寄存器中得SSI位的值驱动。外部CS引脚可供他用，这个模式只适合从模式下使用。
+        
+        （2） SSM = 0: 硬件管理CS引脚，根据SSOE的值，可以分为两种情况：（不推荐使用a模式，自行使用标准GPIO驱动SPI会使软件更灵活）
+                
+                a.  CS输出使能（SSOE = 1），主模式下才能使用此功能，当主机开始工作时，会把CS拉低，停止工作后恢复CS。
                     
-                                SSOE -> hal_spi_ssoe_en();            
-                                SSM  -> hal_spi_set_nss(); 
-                                
-                       通过这两个函数可以设置CS引脚状态：
-                        
-                                （1） SSM = 1：软件管理CS引脚，从器件的选择信息由SPI_CR1寄存器中得SSI位的值驱动。外部CS引脚可供他用，这个模式只适合从模式下使用。
-                                
-                                （2） SSM = 0: 硬件管理CS引脚，根据SSOE的值，可以分为两种情况：（不推荐使用a模式，自行使用标准GPIO驱动SPI会使软件更灵活）
-                                        
-                                        a.  CS输出使能（SSOE = 1），主模式下才能使用此功能，当主机开始工作时，会把CS拉低，停止工作后恢复CS。
-                                          
-                                        b.  CS输出失能（SSOE = 0），从模式下使用该模式，会在CS为低电平时选中该从器件，CS为高电平时，取消从器件的片选。     
-                       
+                b.  CS输出失能（SSOE = 0），从模式下使用该模式，会在CS为低电平时选中该从器件，CS为高电平时，取消从器件的片选。     
+       
 
-                    3. LN882H SPI SLAVE + DMA  可能会出现中断进不了的问题，在中断中，使能DMA之前加个读SPI_DR的指令，可能会解决这个问题。（非必现）
+    3. LN882H SPI SLAVE + DMA  可能会出现中断进不了的问题，在中断中，使能DMA之前加个读SPI_DR的指令，可能会解决这个问题。（非必现）
 
 
 

@@ -724,12 +724,12 @@ static int32_t recvExact( const MQTTContext_t * pContext,
     bool receiveError = false;
 
     assert( pContext != NULL );
-    assert( bytesToRecv <= pContext->networkBuffer.size );
+    assert( bytesToRecv <= pContext->networkBuffer.rx_size );
     assert( pContext->getTime != NULL );
     assert( pContext->transportInterface.recv != NULL );
-    assert( pContext->networkBuffer.pBuffer != NULL );
+    assert( pContext->networkBuffer.rx_pBuffer != NULL );
 
-    pIndex = pContext->networkBuffer.pBuffer;
+    pIndex = pContext->networkBuffer.rx_pBuffer;
     recvFunc = pContext->transportInterface.recv;
     getTimeStampMs = pContext->getTime;
 
@@ -802,7 +802,7 @@ static MQTTStatus_t discardPacket( const MQTTContext_t * pContext,
     assert( pContext != NULL );
     assert( pContext->getTime != NULL );
 
-    bytesToReceive = pContext->networkBuffer.size;
+    bytesToReceive = pContext->networkBuffer.rx_size;
     getTimeStampMs = pContext->getTime;
 
     entryTimeMs = getTimeStampMs();
@@ -861,15 +861,15 @@ static MQTTStatus_t receivePacket( const MQTTContext_t * pContext,
     size_t bytesToReceive = 0U;
 
     assert( pContext != NULL );
-    assert( pContext->networkBuffer.pBuffer != NULL );
+    assert( pContext->networkBuffer.rx_pBuffer != NULL );
 
-    if( incomingPacket.remainingLength > pContext->networkBuffer.size )
+    if( incomingPacket.remainingLength > pContext->networkBuffer.rx_size )
     {
         LogError( ( "Incoming packet will be dumped: "
                     "Packet length exceeds network buffer size."
                     "PacketSize=%lu, NetworkBufferSize=%lu.",
                     ( unsigned long ) incomingPacket.remainingLength,
-                    ( unsigned long ) pContext->networkBuffer.size ) );
+                    ( unsigned long ) pContext->networkBuffer.rx_size ) );
         status = discardPacket( pContext,
                                 incomingPacket.remainingLength,
                                 remainingTimeMs );
@@ -882,7 +882,7 @@ static MQTTStatus_t receivePacket( const MQTTContext_t * pContext,
         if( bytesReceived == ( int32_t ) bytesToReceive )
         {
             /* Receive successful, bytesReceived == bytesToReceive. */
-            LogInfo( ( "Packet received. ReceivedBytes=%ld.",
+            LogDebug( ( "Packet received. ReceivedBytes=%ld.",
                        ( long int ) bytesReceived ) );
         }
         else
@@ -957,7 +957,7 @@ static MQTTStatus_t sendPublishAcks( MQTTContext_t * pContext,
         if( status == MQTTSuccess )
         {
             bytesSent = sendPacket( pContext,
-                                    pContext->networkBuffer.pBuffer,
+                                    pContext->networkBuffer.tx_pBuffer,
                                     MQTT_PUBLISH_ACK_PACKET_SIZE );
         }
 
@@ -1001,6 +1001,7 @@ static MQTTStatus_t handleKeepAlive( MQTTContext_t * pContext )
 
     now = pContext->getTime();
     keepAliveMs = 1000U * ( uint32_t ) pContext->keepAliveIntervalSec;
+//    keepAliveMs = keepAliveMs / 2;
 
     /* If keep alive interval is 0, it is disabled. */
     if( keepAliveMs != 0U )
@@ -1018,6 +1019,7 @@ static MQTTStatus_t handleKeepAlive( MQTTContext_t * pContext )
         {
             if( calculateElapsedTime( now, pContext->lastPacketTime ) > keepAliveMs )
             {
+                LogDebug( ( "--------------MQTT_Ping" ) );
                 status = MQTT_Ping( pContext );
             }
         }
@@ -1043,7 +1045,7 @@ static MQTTStatus_t handleIncomingPublish( MQTTContext_t * pContext,
     assert( pContext->appCallback != NULL );
 
     status = MQTT_DeserializePublish( pIncomingPacket, &packetIdentifier, &publishInfo );
-    LogInfo( ( "De-serialized incoming PUBLISH packet: DeserializerResult=%s.",
+    LogDebug( ( "De-serialized incoming PUBLISH packet: DeserializerResult=%s.",
                MQTT_Status_strerror( status ) ) );
 
     if( status == MQTTSuccess )
@@ -1056,7 +1058,7 @@ static MQTTStatus_t handleIncomingPublish( MQTTContext_t * pContext,
 
         if( status == MQTTSuccess )
         {
-            LogInfo( ( "State record updated. New state=%s.",
+            LogDebug( ( "State record updated. New state=%s.",
                        MQTT_State_strerror( publishRecordState ) ) );
         }
 
@@ -1173,7 +1175,7 @@ static MQTTStatus_t handlePublishAcks( MQTTContext_t * pContext,
 
         if( status == MQTTSuccess )
         {
-            LogInfo( ( "State record updated. New state=%s.",
+            LogDebug( ( "State record updated. New state=%s.",
                        MQTT_State_strerror( publishRecordState ) ) );
         }
         else
@@ -1251,6 +1253,7 @@ static MQTTStatus_t handleIncomingAck( MQTTContext_t * pContext,
             if( ( status == MQTTSuccess ) && ( manageKeepAlive == true ) )
             {
                 pContext->waitingForPingResp = false;
+                LogInfo( ( ">>>>>>>>>>>>>>MQTT ping [rsp <---]" ) );
             }
 
             break;
@@ -1294,7 +1297,7 @@ static MQTTStatus_t receiveSingleIteration( MQTTContext_t * pContext,
     MQTTPacketInfo_t incomingPacket;
 
     assert( pContext != NULL );
-    assert( pContext->networkBuffer.pBuffer != NULL );
+    assert( pContext->networkBuffer.rx_pBuffer != NULL );
 
     status = MQTT_GetIncomingPacketTypeAndLength( pContext->transportInterface.recv,
                                                   pContext->transportInterface.pNetworkContext,
@@ -1306,6 +1309,7 @@ static MQTTStatus_t receiveSingleIteration( MQTTContext_t * pContext,
         {
             /* Assign status so an error can be bubbled up to application,
              * but reset it on success. */
+            LogDebug( ( "--------------handleKeepAlive" ) );
             status = handleKeepAlive( pContext );
         }
 
@@ -1331,7 +1335,7 @@ static MQTTStatus_t receiveSingleIteration( MQTTContext_t * pContext,
     /* Handle received packet. If no data was read then this will not execute. */
     if( status == MQTTSuccess )
     {
-        incomingPacket.pRemainingData = pContext->networkBuffer.pBuffer;
+        incomingPacket.pRemainingData = pContext->networkBuffer.rx_pBuffer;
 
         /* PUBLISH packets allow flags in the lower four bits. For other
          * packet types, they are reserved. */
@@ -1403,12 +1407,12 @@ static MQTTStatus_t sendPublish( MQTTContext_t * pContext,
     assert( pContext != NULL );
     assert( pPublishInfo != NULL );
     assert( headerSize > 0 );
-    assert( pContext->networkBuffer.pBuffer != NULL );
+    assert( pContext->networkBuffer.tx_pBuffer != NULL );
     assert( !( pPublishInfo->payloadLength > 0 ) || ( pPublishInfo->pPayload != NULL ) );
 
     /* Send header first. */
     bytesSent = sendPacket( pContext,
-                            pContext->networkBuffer.pBuffer,
+                            pContext->networkBuffer.tx_pBuffer,
                             headerSize );
 
     if( bytesSent < ( int32_t ) headerSize )
@@ -1542,7 +1546,7 @@ static MQTTStatus_t receiveConnack( const MQTTContext_t * pContext,
     if( status == MQTTSuccess )
     {
         /* Update the packet info pointer to the buffer read. */
-        pIncomingPacket->pRemainingData = pContext->networkBuffer.pBuffer;
+        pIncomingPacket->pRemainingData = pContext->networkBuffer.rx_pBuffer;
 
         /* Deserialize CONNACK. */
         status = MQTT_DeserializeAck( pIncomingPacket, NULL, pSessionPresent );
@@ -1795,7 +1799,7 @@ MQTTStatus_t MQTT_Connect( MQTTContext_t * pContext,
     if( status == MQTTSuccess )
     {
         bytesSent = sendPacket( pContext,
-                                pContext->networkBuffer.pBuffer,
+                                pContext->networkBuffer.tx_pBuffer,
                                 packetSize );
 
         if( bytesSent < ( int32_t ) packetSize )
@@ -1886,7 +1890,7 @@ MQTTStatus_t MQTT_Subscribe( MQTTContext_t * pContext,
     {
         /* Send serialized MQTT SUBSCRIBE packet to transport layer. */
         bytesSent = sendPacket( pContext,
-                                pContext->networkBuffer.pBuffer,
+                                pContext->networkBuffer.tx_pBuffer,
                                 packetSize );
 
         if( bytesSent < ( int32_t ) packetSize )
@@ -2018,7 +2022,7 @@ MQTTStatus_t MQTT_Ping( MQTTContext_t * pContext )
     {
         /* Send the serialized PINGREQ packet to transport layer. */
         bytesSent = sendPacket( pContext,
-                                pContext->networkBuffer.pBuffer,
+                                pContext->networkBuffer.tx_pBuffer,
                                 packetSize );
 
         /* It is an error to not send the entire PINGREQ packet. */
@@ -2031,7 +2035,7 @@ MQTTStatus_t MQTT_Ping( MQTTContext_t * pContext )
         {
             pContext->pingReqSendTimeMs = pContext->lastPacketTime;
             pContext->waitingForPingResp = true;
-            LogDebug( ( "Sent %ld bytes of PINGREQ packet.",
+            LogInfo( ( ">>>>>>>>>>>>>>MQTT ping [req --->] Sent %ld bytes of PINGREQ packet.",
                         ( long int ) bytesSent ) );
         }
     }
@@ -2081,7 +2085,7 @@ MQTTStatus_t MQTT_Unsubscribe( MQTTContext_t * pContext,
     {
         /* Send serialized MQTT UNSUBSCRIBE packet to transport layer. */
         bytesSent = sendPacket( pContext,
-                                pContext->networkBuffer.pBuffer,
+                                pContext->networkBuffer.tx_pBuffer,
                                 packetSize );
 
         if( bytesSent < ( int32_t ) packetSize )
@@ -2131,7 +2135,7 @@ MQTTStatus_t MQTT_Disconnect( MQTTContext_t * pContext )
     if( status == MQTTSuccess )
     {
         bytesSent = sendPacket( pContext,
-                                pContext->networkBuffer.pBuffer,
+                                pContext->networkBuffer.tx_pBuffer,
                                 packetSize );
 
         if( bytesSent < ( int32_t ) packetSize )
@@ -2171,7 +2175,7 @@ MQTTStatus_t MQTT_ProcessLoop( MQTTContext_t * pContext,
     {
         LogError( ( "Invalid input parameter: MQTT Context must have valid getTime." ) );
     }
-    else if( pContext->networkBuffer.pBuffer == NULL )
+    else if( pContext->networkBuffer.rx_pBuffer == NULL || pContext->networkBuffer.tx_pBuffer == NULL )
     {
         LogError( ( "Invalid input parameter: The MQTT context's networkBuffer must not be NULL." ) );
     }
@@ -2228,7 +2232,7 @@ MQTTStatus_t MQTT_ReceiveLoop( MQTTContext_t * pContext,
     {
         LogError( ( "Invalid input parameter: MQTT Context must have a valid getTime function." ) );
     }
-    else if( pContext->networkBuffer.pBuffer == NULL )
+    else if( pContext->networkBuffer.rx_pBuffer == NULL )
     {
         LogError( ( "Invalid input parameter: MQTT context's networkBuffer must not be NULL." ) );
     }

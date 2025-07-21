@@ -304,9 +304,11 @@ flag_exit:
 static int http_parse_header_field(HTTP_INFO *hi, char *param)
 {
     char *token;
-    char t1[256], t2[256];
+    static char t1[128], t2[256];
     int  len;
 
+    memset(t1, 0, sizeof(t1));
+    memset(t2, 0, sizeof(t2));
     LOG_D("\r\n* header: %s \r\n", param);
 
     token = param;
@@ -329,16 +331,16 @@ static int http_parse_header_field(HTTP_INFO *hi, char *param)
         hi->response->status_code = atoi(t2);
 
     } else if(strncasecmp(t1, "set-cookie:", 11) == 0) {
-        // get cookie from server.
-        len = (int)strlen(t2);
-        strncpy(hi->response->cookie, t2, len);
-        hi->response->cookie[len] = 0;
+        // // get cookie from server.
+        // len = (int)strlen(t2);
+        // strncpy(hi->response->cookie, t2, len);
+        // hi->response->cookie[len] = 0;
 
     } else if(strncasecmp(t1, "location:", 9) == 0) {
-        // get location
-        len = (int)strlen(t2);
-        strncpy(hi->response->location, t2, len);
-        hi->response->location[len] = 0;
+        // // get location
+        // len = (int)strlen(t2);
+        // strncpy(hi->response->location, t2, len);
+        // hi->response->location[len] = 0;
 
     } else if(strncasecmp(t1, "content-type:", 13) == 0) {
         // get Content-Type
@@ -1765,14 +1767,15 @@ flag_exit:
  * @param size
  * @return int
  */
-int http_post(HTTP_INFO *hi, char *url, char *data, char *recvBuf, int size)
+int http_post(HTTP_INFO *hi, char *url, char *header_ext, char *body, int body_len, char *rsp_buf, int rsp_buf_len)
 {
     int         sock_fd, is_https, verify;
     int         ret, mode, opt, len;
     socklen_t   slen;
     int         retCode = 0; // record error code.
     char        * tempBuffer = NULL, * host = NULL, * path = NULL;
-    const int   tempBufferSize = FIELD_URL_HOST_MAX_LEN + FIELD_URL_PATH_MAX_LEN + 4;
+    // const int   tempBufferSize = FIELD_URL_HOST_MAX_LEN + FIELD_URL_PATH_MAX_LEN + 4;
+    const int   tempBufferSize = strlen(url) + strlen(header_ext) + body_len + 256 + 4;
     char        port[FIELD_HTTP_HEADER_PORT_MAX_LEN] = { 0 };
 
     if(NULL == hi) {
@@ -1846,18 +1849,14 @@ int http_post(HTTP_INFO *hi, char *url, char *data, char *recvBuf, int size)
     /* Send HTTP request */
     len = snprintf(tempBuffer, tempBufferSize,
             "POST %s HTTP/1.1\r\n"
-            "User-Agent: Mozilla/4.0\r\n"
             "Host: %s:%s\r\n"
-            "Connection: Keep-Alive\r\n"
-            "Accept: */*\r\n"
-            "Content-Type: application/json; charset=utf-8\r\n"
             "Content-Length: %d\r\n"
-            "%s\r\n"
-            "%s",
+            "%s\r\n" /* header_ext */
+            "%s",    /* body */
             path, host, port,
-            (int)strlen(data),
-            hi->request->cookie,
-            data);
+            body_len,
+            header_ext,
+            body);
 
     if((ret = https_write(hi, tempBuffer, len)) != len) {
         https_close(&hi);
@@ -1876,15 +1875,15 @@ int http_post(HTTP_INFO *hi, char *url, char *data, char *recvBuf, int size)
     while(1) {
         mode = http_parse(hi);
         if((mode & HTTP_PARSE_WRITE) == HTTP_PARSE_WRITE) {
-            if(len < size - 1) {
-                if (len + hi->body_len > size) {
-                    strncpy(&recvBuf[len], hi->body, size - len - 1);
-                    len = size - 1;
-                    recvBuf[len] = 0;
+            if(len < rsp_buf_len - 1) {
+                if (len + hi->body_len > rsp_buf_len) {
+                    strncpy(&rsp_buf[len], hi->body, rsp_buf_len - len - 1);
+                    len = rsp_buf_len - 1;
+                    rsp_buf[len] = 0;
                 } else {
-                    strncpy(&recvBuf[len], hi->body, hi->body_len);
+                    strncpy(&rsp_buf[len], hi->body, hi->body_len);
                     len += hi->body_len;
-                    recvBuf[len] = 0;
+                    rsp_buf[len] = 0;
                 }
             }
         }
@@ -1926,12 +1925,12 @@ int http_post(HTTP_INFO *hi, char *url, char *data, char *recvBuf, int size)
         strncpy(hi->url->path, path, strlen(path));
     }
 
-    LOG_D("status_code: %d \r\n", hi->response->status_code);
-    LOG_D("     cookie: %s \r\n", hi->response->cookie);
-    LOG_D("   location: %s \r\n", hi->response->location);
-    LOG_D("   referrer: %s \r\n", hi->response->referrer);
-    LOG_D("     length: %d \r\n", hi->response->content_length);
-    LOG_D("   body len: %d \r\n", hi->body_len);
+    LOG_D("status_code: %d ", hi->response->status_code);
+    LOG_D("     cookie: %s ", hi->response->cookie);
+    LOG_D("   location: %s ", hi->response->location);
+    LOG_D("   referrer: %s ", hi->response->referrer);
+    LOG_D("     length: %d ", hi->response->content_length);
+    LOG_D("   body len: %d ", hi->body_len);
 
 flag_exit:
 
@@ -2168,12 +2167,12 @@ int http_post_ext(HTTP_INFO *hi, char *url, char *data, http_get_cb cbFunc, cons
         strncpy(hi->url->path, path, strlen(path));
     }
 
-    LOG_D("status_code: %d \r\n", hi->response->status_code);
-    LOG_D("     cookie: %s \r\n", hi->response->cookie);
-    LOG_D("   location: %s \r\n", hi->response->location);
-    LOG_D("   referrer: %s \r\n", hi->response->referrer);
-    LOG_D("     length: %d \r\n", hi->response->content_length);
-    LOG_D("   body len: %d \r\n", hi->body_len);
+    LOG_D("status_code: %d ", hi->response->status_code);
+    LOG_D("     cookie: %s ", hi->response->cookie);
+    LOG_D("   location: %s ", hi->response->location);
+    LOG_D("   referrer: %s ", hi->response->referrer);
+    LOG_D("     length: %d ", hi->response->content_length);
+    LOG_D("   body len: %d ", hi->body_len);
 
 flag_exit:
 
@@ -2389,10 +2388,14 @@ flag_release_tempBuffer:
 void http_dump_err_msg(void)
 {
     #define ERR_STR_MAX_SIZE    (150)
-    char errstr[ERR_STR_MAX_SIZE];
+    char *errstr = hc_malloc(ERR_STR_MAX_SIZE);
+    if (errstr == NULL) {
+        return;
+    }
 
     mbedtls_strerror(_error, errstr, ERR_STR_MAX_SIZE);
     LOG_E("Error: %s\r\n", errstr);
+    hc_free(errstr);
 }
 
 /**

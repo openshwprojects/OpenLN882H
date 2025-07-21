@@ -2,11 +2,10 @@
 #include "ln_oled_font.h"
 #include "ln_i2c_test.h"
 
-
 /*
-        OLED使用说明：
+    OLED使用说明：
 
-                    1. 因为本测试使用的是I2C接口，所以接线和函数调用请参考ln_i2c_test()函数。
+    1. 因为本测试使用的是I2C接口，所以接线和函数调用请参考ln_i2c_test()函数。
 */
 
 uint8_t OLED_GRAM[144][8];

@@ -37,9 +37,9 @@ void ln_ext_test()
 {
     hal_gpio_pin_pull_set(GPIOA_BASE,GPIO_PIN_0,GPIO_PULL_DOWN);    //配置下拉
     
-    hal_ext_init(EXT_INT_SENSE_0,EXT_INT_POSEDEG,HAL_ENABLE);   //使能外部中断引脚,外部引脚为PA0
+    hal_ext_init(EXT_INT_SENSE_0,EXT_INT_POSEDEG,HAL_ENABLE);       //使能外部中断引脚,外部引脚为PA0
     
-    NVIC_SetPriority(EXT_IRQn,1);                               //配置中断优先级
+    NVIC_SetPriority(EXT_IRQn,1);                                   //配置中断优先级
     NVIC_EnableIRQ(EXT_IRQn);  
     
     while(1)

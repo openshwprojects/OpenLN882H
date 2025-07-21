@@ -17,11 +17,7 @@
 
 #include "ln_drv_adc.h"
 
-/*
- *  注意！！！ 
- *  在驱动例程中，有一些函数的参数是指向字符串（数组）地址的指针，函数中没有检查这些指针的有效性，
- *  没有判断指针是否为空，也没有判断指针指向的数据是否还有剩余空间，这些都需要使用者自行决定！！！
-*/
+
 int main (int argc, char* argv[])
 {  
     /****************** 1. 系统初始化 ***********************/
@@ -31,6 +27,14 @@ int main (int argc, char* argv[])
     ln_show_reg_init();
 
     /****************** 2. 外设配置 ***********************/
+    /**
+        GPIOA0  ->  ADC2
+        GPIOA1  ->  ADC3
+        GPIOA4  ->  ADC4
+        GPIOB3  ->  ADC5
+        GPIOB4  ->  ADC6
+        GPIOB5  ->  ADC7
+     */
     adc_init(ADC_CH5);
     adc_start();
     while(1)
@@ -39,6 +43,6 @@ int main (int argc, char* argv[])
         
         LOG(LOG_LVL_INFO,"ADC = %d \n",adc_get_data(ADC_CH5));
         
-        ln_delay_ms(100);
+        ln_delay_ms(1000);
     }
 }

@@ -73,7 +73,7 @@ if(NOT DEFINED VENDOR_SDK_ADAPTED)
     ###########################   misc settings   ##############################
     ############################################################################
 
-    set(CMAKE_VERBOSE_MAKEFILE    ON)
+    set(CMAKE_VERBOSE_MAKEFILE    OFF)
 
     #-----------------------------   output path   -----------------------------
     set(EXECUTABLE_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/bin)

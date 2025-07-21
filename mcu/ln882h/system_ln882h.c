@@ -105,7 +105,7 @@ void SetSysClock(void)
     hal_misc_awo_set_ldo15_1_vset(7);         //(7: optimize pll @vtrim=1) Fix OFDM package losses
 
     hal_misc_awo_set_o_cpu_sleep_counter_bp(0); //32K RCO cal
-    hal_misc_awo_set_bod_vth(0x03);             //0x03=2.2V BOD, fix reboot problem
+    hal_misc_awo_set_bod_vth(0x01);             //0=2.6V,1=2.45V,2=2.3V,3=2.2V BOD threshold
 
     //2. clock
     hal_clock_init(&clock_init);

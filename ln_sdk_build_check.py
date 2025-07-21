@@ -247,8 +247,6 @@ def main():
         # http_ota_example
         "project/http_ota_example/keil_ln882h_rel",
 
-        # smartconfig
-        "project/smartconfig/keil_ln882h_rel",
         # aws_iot_core
         "project/aws_iot_core/demo_http_mutual_auth/keil_ln882h_rel",
         "project/aws_iot_core/demo_mqtt_mutual_auth/keil_ln882h_rel",

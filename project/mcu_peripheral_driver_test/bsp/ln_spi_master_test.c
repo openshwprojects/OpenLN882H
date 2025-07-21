@@ -11,42 +11,43 @@
 
 /**
         SPI主机调试说明：
-                    1. 接线说明：
-                                LN882H          25WQ16
+        
+        1. 接线说明：
+                    LN882H          25WQ16
 
-                                PA5    ->       SCLK(6)
-                                PA10   ->       CS(1)
-                                PA6    ->       MOSI(5)
-                                PA7    ->       MISO(2)
-                                VCC     ->      HOLD(7)
-                                VCC     ->      WP(3)
-                                GND     ->      GND(4)
-                                VCC     ->      VCC(8)
-                                
-                                测试时推荐直接焊线，不要插杜邦线
-                                
-                    2. SPI测试分为两部分，一部分是SPI直接读写25WQ16 Flash芯片，另一部分是通过SPI + DMA读写Flash芯片，通过 LN_DMA_EN_STATUS  这个变量来选择是否使用DMA
+                    PA5    ->       SCLK(6)
+                    PA10   ->       CS(1)
+                    PA6    ->       MOSI(5)
+                    PA7    ->       MISO(2)
+                    VCC     ->      HOLD(7)
+                    VCC     ->      WP(3)
+                    GND     ->      GND(4)
+                    VCC     ->      VCC(8)
+                    
+                    测试时推荐直接焊线，不要插杜邦线
+                    
+        2. SPI测试分为两部分，一部分是SPI直接读写25WQ16 Flash芯片，另一部分是通过SPI + DMA读写Flash芯片，通过 LN_DMA_EN_STATUS  这个变量来选择是否使用DMA
 
-                    3. 测试中SPI CS引脚使用GPIO引脚控制，这样更灵活，更好用,但是要注意的是，数据发送完成后，要判断busy位，来让硬件把数据发送出去在拉高CS!!!
+        3. 测试中SPI CS引脚使用GPIO引脚控制，这样更灵活，更好用,但是要注意的是，数据发送完成后，要判断busy位，来让硬件把数据发送出去在拉高CS!!!
 
-                    4. CS引脚也可以由SPI_CR1中的NSS和SSM控制，对应控制函数为：
+        4. CS引脚也可以由SPI_CR1中的NSS和SSM控制，对应控制函数为：
 
-                        SSOE -> hal_spi_ssoe_en();            
-                        SSM  -> hal_spi_set_nss(); 
+            SSOE -> hal_spi_ssoe_en();            
+            SSM  -> hal_spi_set_nss(); 
 
-                        通过这两个函数可以设置CS引脚状态：
-                        
-                        （1） SSM = 1：软件管理CS引脚，从器件的选择信息由SPI_CR1寄存器中得SSI位的值驱动。外部CS引脚可供他用，这个模式只适合从模式下使用。
+            通过这两个函数可以设置CS引脚状态：
+            
+            （1） SSM = 1：软件管理CS引脚，从器件的选择信息由SPI_CR1寄存器中得SSI位的值驱动。外部CS引脚可供他用，这个模式只适合从模式下使用。
 
-                        （2） SSM = 0: 硬件管理CS引脚，根据SSOE的值，可以分为两种情况：（不推荐使用a模式，自行使用标准GPIO驱动SPI会使软件更灵活）
+            （2） SSM = 0: 硬件管理CS引脚，根据SSOE的值，可以分为两种情况：（不推荐使用a模式，自行使用标准GPIO驱动SPI会使软件更灵活）
 
-                            a. CS输出使能（SSOE = 1），主模式下才能使用此功能，当主机开始工作时，会把CS拉低，停止工作后恢复CS。
-                             
-                               当一个SPI设备需要发送广播数据，它必须拉低NSS信号，以通知所有其它的设备它是主设备；如果它不能拉低NSS，这意味着总线上有另外一个主设备在通信，则这个SPI设备进入主模式失败状态：即MSTR位被自动清除，此设备进入从模式.
+                a. CS输出使能（SSOE = 1），主模式下才能使用此功能，当主机开始工作时，会把CS拉低，停止工作后恢复CS。
+                    
+                    当一个SPI设备需要发送广播数据，它必须拉低NSS信号，以通知所有其它的设备它是主设备；如果它不能拉低NSS，这意味着总线上有另外一个主设备在通信，则这个SPI设备进入主模式失败状态：即MSTR位被自动清除，此设备进入从模式.
 
-                            b. CS输出失能（SSOE = 0），从模式下使用该模式，会在CS为低电平时选中该从器件，CS为高电平时，取消从器件的片选
-                            
-                    5. 测试成功会有LOG打印，请注意观察LOG.
+                b. CS输出失能（SSOE = 0），从模式下使用该模式，会在CS为低电平时选中该从器件，CS为高电平时，取消从器件的片选
+                
+        5. 测试成功会有LOG打印，请注意观察LOG.
 
 */
 
@@ -111,7 +112,7 @@ void ln_spi_master_init()
     spi_init_type_def spi_init;
     memset(&spi_init,0,sizeof(spi_init));
 
-    spi_init.spi_baud_rate_prescaler = SPI_BAUDRATEPRESCALER_2;       //设置波特率
+    spi_init.spi_baud_rate_prescaler = SPI_BAUDRATEPRESCALER_2;         //设置波特率
     spi_init.spi_mode      = SPI_MODE_MASTER;                           //设置主从模式
     spi_init.spi_data_size = SPI_DATASIZE_8B;                           //设置数据大小
     spi_init.spi_first_bit = SPI_FIRST_BIT_MSB;                         //设置帧格式

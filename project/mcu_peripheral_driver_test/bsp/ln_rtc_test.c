@@ -11,26 +11,29 @@
 
 /**
         RTC使用说明：
-                    1. RTC会从load计数到match，所以LOAD寄存器里面的值可以理解为初值。
-                    
-                    2. rtc_warp_en = 1时，当计数器达到匹配值时会从0开始计数，否则计数器一直会计数下去，直到溢出。
-                    
-                    3. RTC可以使用SleepTimer的校准值来校准。
 
-                    4. GPIOB5为RTC中断翻转引脚
-                    
-                    5. 定时时间 T = ( match - load ) * (1 / 32k) s
-                    
-                    6. 使用RTC定时比较长的时间时，可以使用SleepTimer进行校准。
-                    
-                        a. 先进行校准
-                        
-                        b. 使用校准值对32K进行校准
-                        
-                           例如设置定时 1s时，rtc_match = (32000 - 0) * (1 / 32K) * (32k_cal / 32k),32k_cal为校准值。
-                           
-                           
-                    7. 对于SleepTimer 先暂时不用关心，后面低功耗相关会具体说明
+        注：使用RTC精准定时需要校准，否则会有很大的误差，校准请参考 project\mcu_peripheral_driver_demo\RTC工程
+
+        1. RTC会从load计数到match，所以LOAD寄存器里面的值可以理解为初值。
+        
+        2. rtc_warp_en = 1时，当计数器达到匹配值时会从0开始计数，否则计数器一直会计数下去，直到溢出。
+        
+        3. RTC可以使用SleepTimer的校准值来校准。
+
+        4. GPIOB5为RTC中断翻转引脚
+        
+        5. 定时时间 T = ( match - load ) * (1 / 32k) s
+        
+        6. 使用RTC定时比较长的时间时，可以使用SleepTimer进行校准。
+        
+            a. 先进行校准
+            
+            b. 使用校准值对32K进行校准
+            
+                例如设置定时 1s时，rtc_match = (32000 - 0) * (1 / 32K) * (32k_cal / 32k),32k_cal为校准值。
+                
+                
+        7. 对于SleepTimer 先暂时不用关心，后面低功耗相关会具体说明
 */ 
 
 

@@ -670,6 +670,7 @@ int iperf(char *args)
         /* stop iperf */
         mode = param.mode;
         if(mode != IPERF_MODE_STOP){
+            param.mode = IPERF_MODE_STOP;
             OS_SemaphoreRelease(&param.kill_signal);
         }
         return 0;

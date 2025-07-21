@@ -197,7 +197,11 @@ static void sta_netif_status_changed_cb(struct netif *nif)
 {
     if (!ip4_addr_cmp(ip_2_ip4(&nif->ip_addr), IP4_ADDR_ANY4))
     {
+#if (LWIP_DHCP != 0)
         if (dhcp_supplied_address(nif) && (nif->flags & NETIF_FLAG_UP)
+#else
+        if ((nif->flags & NETIF_FLAG_UP)
+#endif
             && (netif_is_link_up(nif))) {
             print_netdev_info(nif);
             wifi_set_allow_cpu_sleep_flag(1);
@@ -271,15 +275,18 @@ int netdev_set_state(netif_idx_t nif_idx, netdev_state_t state)
             netif_set_status_callback(nif, sta_netif_status_changed_cb);
             netif_set_link_callback(nif, sta_netif_link_changed_cb);
 
+#if (LWIP_DHCP != 0)
             netifapi_dhcp_stop(nif);
             if (! g_STA_static_IP) {
             	netifapi_dhcp_start(nif);
             }
+#endif
         }
         else
         {
+#if (LWIP_DHCP != 0)
             netifapi_dhcp_stop(nif);
-
+#endif
             netifapi_netif_set_down(nif);
             netifapi_netif_set_link_down(nif);
 
@@ -335,8 +342,13 @@ int netdev_got_ip(void)
 {
     struct netif *nif = netdev_get_netif(netdev_get_active());
     /* (DHCP supplied) or ((Static IP) and (LinkUp)) */
+
+#if (LWIP_DHCP != 0)
     return ((0 != dhcp_supplied_address(nif)) || \
-            ((IPADDR_ANY != nif->ip_addr.addr) && (nif->flags & (NETIF_FLAG_LINK_UP | NETIF_FLAG_UP))));       
+            ((IPADDR_ANY != nif->ip_addr.addr) && (nif->flags & (NETIF_FLAG_LINK_UP | NETIF_FLAG_UP))));
+#else
+    return (((IPADDR_ANY != nif->ip_addr.addr) && (nif->flags & (NETIF_FLAG_LINK_UP | NETIF_FLAG_UP))));
+#endif
 }
 
 int netdev_set_mac_addr(netif_idx_t nif_idx, uint8_t *mac_addr)

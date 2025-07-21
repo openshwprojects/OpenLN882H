@@ -128,8 +128,10 @@ typedef enum MQTTQoS
  */
 typedef struct MQTTFixedBuffer
 {
-    uint8_t * pBuffer; /**< @brief Pointer to buffer. */
-    size_t size;       /**< @brief Size of buffer. */
+    uint8_t * rx_pBuffer; /**< @brief Pointer to buffer. */
+    size_t    rx_size;    /**< @brief Size of buffer. */
+    uint8_t * tx_pBuffer; /**< @brief Pointer to buffer. */
+    size_t    tx_size;    /**< @brief Size of buffer. */
 } MQTTFixedBuffer_t;
 
 /**

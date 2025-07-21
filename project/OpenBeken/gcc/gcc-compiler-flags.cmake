@@ -37,7 +37,7 @@ set(CMAKE_C_FLAGS_DEBUG   "-ggdb"
   CACHE INTERNAL  "Flags used by the C compiler during DEBUG builds."
 )
 
-set(CMAKE_C_FLAGS_RELEASE "-O1 -DNDEBUG"
+set(CMAKE_C_FLAGS_RELEASE "-Os -DNDEBUG"
   CACHE INTERNAL  "Flags used by the C compiler during RELEASE builds."
 )
 
@@ -53,7 +53,7 @@ set(CMAKE_CXX_FLAGS_DEBUG   "-ggdb"
   CACHE INTERNAL  "Flags used by the CXX compiler during DEBUG builds."
 )
 
-set(CMAKE_CXX_FLAGS_RELEASE "-O1 -DNDEBUG"
+set(CMAKE_CXX_FLAGS_RELEASE "-Os -DNDEBUG"
   CACHE INTERNAL  "Flags used by the CXX compiler during RELEASE builds."
 )
 

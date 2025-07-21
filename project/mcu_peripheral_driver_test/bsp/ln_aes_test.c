@@ -11,26 +11,26 @@
 
 
 /*
-        AES使用说明：
+    AES使用说明：
+
+    1. 需要注意的是，加解密操作一次只能操作16字节，如果超过16字节要重复加密的过程。
+    
+    2. 解密的时候，要重新设置秘钥和初始化向量。
+    
+    
+    3. 如下为网上验证过的AES加密结果，可以试验对比
+    
+        使用CBC方式加密,秘钥长度256bit
+        明文：1234567890ABCDEF 
+        秘钥：FEDCBA0987654321FEDCBA0987654321
+        初始化向量：1234567890ABCDEF
+        加密之后的密文：A5 CB 75 C3 26 A5 2F 1C  51 FB E2 5F 78 08 0F FE 
         
-                1. 需要注意的是，加解密操作一次只能操作16字节，如果超过16字节要重复加密的过程。
-                
-                2. 解密的时候，要重新设置秘钥和初始化向量。
-                
-                
-                3. 如下为网上验证过的AES加密结果，可以试验对比
-                
-                    使用CBC方式加密,秘钥长度256bit
-                    明文：1234567890ABCDEF 
-                    秘钥：FEDCBA0987654321FEDCBA0987654321
-                    初始化向量：1234567890ABCDEF
-                    加密之后的密文：A5 CB 75 C3 26 A5 2F 1C  51 FB E2 5F 78 08 0F FE 
-                    
-                    使用ECB方式加密,秘钥长度256bit
-                    明文：1234567890ABCDEF 
-                    秘钥：FEDCBA0987654321FEDCBA0987654321
-                    初始化向量：1234567890ABCDEF
-                    加密之后的密文：E4 BE A6 DD A0 F4 4C 59  7B 9D 51 8C B9 38 52 80 
+        使用ECB方式加密,秘钥长度256bit
+        明文：1234567890ABCDEF 
+        秘钥：FEDCBA0987654321FEDCBA0987654321
+        初始化向量：1234567890ABCDEF
+        加密之后的密文：E4 BE A6 DD A0 F4 4C 59  7B 9D 51 8C B9 38 52 80 
 
 
 */
@@ -63,7 +63,7 @@ void ln_aes_test()
 
     aes_init.aes_cbc_mod = AES_CBC_MOD_ECB_MOD;     //设置AES为CBC加密模式
     aes_init.aes_key_len = AES_KEY_LEN_256_BIT;     //设置密码长度为256bit
-    aes_init.aes_opcode  = AES_OPCODE_ENCRYPT;     //设置当前模式为加密模式
+    aes_init.aes_opcode  = AES_OPCODE_ENCRYPT;      //设置当前模式为加密模式
     aes_init.aes_big_endian = AES_BIG_ENDIAN;       //默认配置（不要更改）
 
     hal_aes_init(AES_BASE,&aes_init);               //初始化AES

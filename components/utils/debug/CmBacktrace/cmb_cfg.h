@@ -60,8 +60,8 @@
 /* language of print information */
 #define CMB_PRINT_LANGUAGE            CMB_PRINT_LANGUAGE_ENGLISH
 
-#if defined(__CC_ARM)
-#define CMB_CODE_SECTION_NAME         ER_FLASH
+#if defined(__CC_ARM) || defined(__ARMCC_VERSION)
+    #define CMB_CODE_SECTION_NAME         ER_FLASH
 #elif defined(__ICCARM__)
     #error "not supported compiler ICCARM"
 #elif defined(__GNUC__)

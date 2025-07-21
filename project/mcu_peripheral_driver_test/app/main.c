@@ -33,6 +33,8 @@ int main (int argc, char* argv[])
     
     ln_show_reg_init();
     
+    ln_timer_test();
+    
     while(1)
     {
         LOG(LOG_LVL_INFO,"ln882H running! \n");

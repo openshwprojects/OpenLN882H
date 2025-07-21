@@ -11,7 +11,7 @@
 
 /*
     I2S调试说明：
-
+        注：LN882H没有I2S主模式，但是可以通过SPI+PWM来模拟主模式的I2S，具体的可以参考project/mcu_peripheral_driver_demo/I2S
         1. 引脚     
                     LN882H          STM32
                     A8(WS)          PB12             

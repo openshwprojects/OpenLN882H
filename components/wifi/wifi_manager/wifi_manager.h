@@ -9,7 +9,7 @@ extern "C" {
 #include "utils/ln_list.h"
 #include "wifi.h"
 
-#define AP_INFO_LIFETIME    (8)//uints:second
+#define AP_INFO_LIFETIME    (60)//uints:second
 #define AP_LIST_NODE_MAX    (40)
 
 typedef enum 

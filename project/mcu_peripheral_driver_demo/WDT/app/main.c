@@ -25,7 +25,7 @@ int main (int argc, char* argv[])
     LOG(LOG_LVL_INFO,"ln882H init! \n");
     ln_show_reg_init();
 
-    /****************** 2. RTC 测试***********************/
+    /****************** 2. WDT 测试***********************/
     wdt_init(WDT_TOP_VALUE_8);
 
     while(1)

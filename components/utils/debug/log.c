@@ -17,6 +17,17 @@ int log_stdio_write(char *buf, size_t size)
     return ret;
 }
 
+#if defined(__CC_ARM)
+#include "stdlib.h"
+
+int fputc(int ch, FILE* f)
+{
+    char c = ch;
+    log_stdio_write(&c, 1);
+    return ch;
+}
+#endif
+
 #define __is_print(ch) ((unsigned int)((ch) - ' ') < 127u - ' ')
 
 /**

@@ -625,14 +625,14 @@ static void serializePublishCommon( const MQTTPublishInfo_t * pPublishInfo,
 
     assert( pPublishInfo != NULL );
     assert( pFixedBuffer != NULL );
-    assert( pFixedBuffer->pBuffer != NULL );
+    assert( pFixedBuffer->tx_pBuffer != NULL );
     /* Packet Id should be non zero for Qos 1 and Qos 2. */
     assert( ( pPublishInfo->qos == MQTTQoS0 ) || ( packetIdentifier != 0U ) );
     /* Duplicate flag should be set only for Qos 1 or Qos 2. */
     assert( ( pPublishInfo->dup != true ) || ( pPublishInfo->qos != MQTTQoS0 ) );
 
     /* Get the start address of the buffer. */
-    pIndex = pFixedBuffer->pBuffer;
+    pIndex = pFixedBuffer->tx_pBuffer;
 
     if( pPublishInfo->qos == MQTTQoS1 )
     {
@@ -702,7 +702,7 @@ static void serializePublishCommon( const MQTTPublishInfo_t * pPublishInfo,
 
     /* Ensure that the difference between the end and beginning of the buffer
      * is less than the buffer size. */
-    assert( ( ( size_t ) ( pIndex - pFixedBuffer->pBuffer ) ) <= pFixedBuffer->size );
+    assert( ( ( size_t ) ( pIndex - pFixedBuffer->tx_pBuffer ) ) <= pFixedBuffer->tx_size );
 }
 
 static size_t getRemainingLength( TransportRecv_t recvFunc,
@@ -1199,9 +1199,9 @@ static MQTTStatus_t validateSubscriptionSerializeParams( const MQTTSubscribeInfo
         status = MQTTBadParameter;
     }
     /* A buffer must be configured for serialization. */
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "Argument cannot be NULL: pFixedBuffer->pBuffer is NULL." ) );
+        LogError( ( "Argument cannot be NULL: pFixedBuffer->tx_pBuffer is NULL." ) );
         status = MQTTBadParameter;
     }
     else if( subscriptionCount == 0U )
@@ -1222,11 +1222,11 @@ static MQTTStatus_t validateSubscriptionSerializeParams( const MQTTSubscribeInfo
         packetSize = 1U + remainingLengthEncodedSize( remainingLength )
                      + remainingLength;
 
-        if( packetSize > pFixedBuffer->size )
+        if( packetSize > pFixedBuffer->tx_size )
         {
             LogError( ( "Buffer size of %lu is not sufficient to hold "
                         "serialized packet of size of %lu.",
-                        ( unsigned long ) pFixedBuffer->size,
+                        ( unsigned long ) pFixedBuffer->tx_size,
                         ( unsigned long ) packetSize ) );
             status = MQTTNoMemory;
         }
@@ -1396,9 +1396,9 @@ static void serializeConnectPacket( const MQTTConnectInfo_t * pConnectInfo,
 
     assert( pConnectInfo != NULL );
     assert( pFixedBuffer != NULL );
-    assert( pFixedBuffer->pBuffer != NULL );
+    assert( pFixedBuffer->tx_pBuffer != NULL );
 
-    pIndex = pFixedBuffer->pBuffer;
+    pIndex = pFixedBuffer->tx_pBuffer;
     /* The first byte in the CONNECT packet is the control packet type. */
     *pIndex = MQTT_PACKET_TYPE_CONNECT;
     pIndex++;
@@ -1496,11 +1496,11 @@ static void serializeConnectPacket( const MQTTConnectInfo_t * pConnectInfo,
     }
 
     LogDebug( ( "Length of serialized CONNECT packet is %lu.",
-                ( ( unsigned long ) ( pIndex - pFixedBuffer->pBuffer ) ) ) );
+                ( ( unsigned long ) ( pIndex - pFixedBuffer->tx_pBuffer ) ) ) );
 
     /* Ensure that the difference between the end and beginning of the buffer
      * is less than the buffer size. */
-    assert( ( ( size_t ) ( pIndex - pFixedBuffer->pBuffer ) ) <= pFixedBuffer->size );
+    assert( ( ( size_t ) ( pIndex - pFixedBuffer->tx_pBuffer ) ) <= pFixedBuffer->tx_size );
 }
 
 /*-----------------------------------------------------------*/
@@ -1623,9 +1623,9 @@ MQTTStatus_t MQTT_SerializeConnect( const MQTTConnectInfo_t * pConnectInfo,
         status = MQTTBadParameter;
     }
     /* A buffer must be configured for serialization. */
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "Argument cannot be NULL: pFixedBuffer->pBuffer is NULL." ) );
+        LogError( ( "Argument cannot be NULL: pFixedBuffer->tx_pBuffer is NULL." ) );
         status = MQTTBadParameter;
     }
     else if( ( pWillInfo != NULL ) && ( pWillInfo->pTopicName == NULL ) )
@@ -1641,11 +1641,11 @@ MQTTStatus_t MQTT_SerializeConnect( const MQTTConnectInfo_t * pConnectInfo,
         connectPacketSize = remainingLength + remainingLengthEncodedSize( remainingLength ) + 1U;
 
         /* Check that the full packet size fits within the given buffer. */
-        if( connectPacketSize > pFixedBuffer->size )
+        if( connectPacketSize > pFixedBuffer->tx_size )
         {
             LogError( ( "Buffer size of %lu is not sufficient to hold "
                         "serialized CONNECT packet of size of %lu.",
-                        ( unsigned long ) pFixedBuffer->size,
+                        ( unsigned long ) pFixedBuffer->tx_size,
                         ( unsigned long ) connectPacketSize ) );
             status = MQTTNoMemory;
         }
@@ -1720,7 +1720,7 @@ MQTTStatus_t MQTT_SerializeSubscribe( const MQTTSubscribeInfo_t * pSubscriptionL
 
     if( status == MQTTSuccess )
     {
-        pIndex = pFixedBuffer->pBuffer;
+        pIndex = pFixedBuffer->tx_pBuffer;
 
         /* The first byte in SUBSCRIBE is the packet type. */
         *pIndex = MQTT_PACKET_TYPE_SUBSCRIBE;
@@ -1747,7 +1747,7 @@ MQTTStatus_t MQTT_SerializeSubscribe( const MQTTSubscribeInfo_t * pSubscriptionL
         }
 
         LogDebug( ( "Length of serialized SUBSCRIBE packet is %lu.",
-                    ( ( unsigned long ) ( pIndex - pFixedBuffer->pBuffer ) ) ) );
+                    ( ( unsigned long ) ( pIndex - pFixedBuffer->tx_pBuffer ) ) ) );
     }
 
     return status;
@@ -1813,7 +1813,7 @@ MQTTStatus_t MQTT_SerializeUnsubscribe( const MQTTSubscribeInfo_t * pSubscriptio
     if( status == MQTTSuccess )
     {
         /* Get the start of the buffer to the iterator variable. */
-        pIndex = pFixedBuffer->pBuffer;
+        pIndex = pFixedBuffer->tx_pBuffer;
 
         /* The first byte in UNSUBSCRIBE is the packet type. */
         *pIndex = MQTT_PACKET_TYPE_UNSUBSCRIBE;
@@ -1836,7 +1836,7 @@ MQTTStatus_t MQTT_SerializeUnsubscribe( const MQTTSubscribeInfo_t * pSubscriptio
         }
 
         LogDebug( ( "Length of serialized UNSUBSCRIBE packet is %lu.",
-                    ( ( unsigned long ) ( pIndex - pFixedBuffer->pBuffer ) ) ) );
+                    ( ( unsigned long ) ( pIndex - pFixedBuffer->tx_pBuffer ) ) ) );
     }
 
     return status;
@@ -1902,9 +1902,9 @@ MQTTStatus_t MQTT_SerializePublish( const MQTTPublishInfo_t * pPublishInfo,
         status = MQTTBadParameter;
     }
     /* A buffer must be configured for serialization. */
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "Argument cannot be NULL: pFixedBuffer->pBuffer is NULL." ) );
+        LogError( ( "Argument cannot be NULL: pFixedBuffer->tx_pBuffer is NULL." ) );
         status = MQTTBadParameter;
     }
 
@@ -1946,11 +1946,11 @@ MQTTStatus_t MQTT_SerializePublish( const MQTTPublishInfo_t * pPublishInfo,
                      + remainingLength;
     }
 
-    if( ( status == MQTTSuccess ) && ( packetSize > pFixedBuffer->size ) )
+    if( ( status == MQTTSuccess ) && ( packetSize > pFixedBuffer->tx_size ) )
     {
         LogError( ( "Buffer size of %lu is not sufficient to hold "
                     "serialized PUBLISH packet of size of %lu.",
-                    ( unsigned long ) pFixedBuffer->size,
+                    ( unsigned long ) pFixedBuffer->tx_size,
                     ( unsigned long ) packetSize ) );
         status = MQTTNoMemory;
     }
@@ -1990,9 +1990,9 @@ MQTTStatus_t MQTT_SerializePublishHeader( const MQTTPublishInfo_t * pPublishInfo
         status = MQTTBadParameter;
     }
     /* A buffer must be configured for serialization. */
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "Argument cannot be NULL: pFixedBuffer->pBuffer is NULL." ) );
+        LogError( ( "Argument cannot be NULL: pFixedBuffer->tx_pBuffer is NULL." ) );
         status = MQTTBadParameter;
     }
     else if( ( pPublishInfo->pTopicName == NULL ) || ( pPublishInfo->topicNameLength == 0U ) )
@@ -2026,11 +2026,11 @@ MQTTStatus_t MQTT_SerializePublishHeader( const MQTTPublishInfo_t * pPublishInfo
                      - pPublishInfo->payloadLength;
     }
 
-    if( ( status == MQTTSuccess ) && ( packetSize > pFixedBuffer->size ) )
+    if( ( status == MQTTSuccess ) && ( packetSize > pFixedBuffer->tx_size ) )
     {
         LogError( ( "Buffer size of %lu is not sufficient to hold "
                     "serialized PUBLISH header packet of size of %lu.",
-                    ( unsigned long ) pFixedBuffer->size,
+                    ( unsigned long ) pFixedBuffer->tx_size,
                     ( unsigned long ) ( packetSize - pPublishInfo->payloadLength ) ) );
         status = MQTTNoMemory;
     }
@@ -2064,13 +2064,13 @@ MQTTStatus_t MQTT_SerializeAck( const MQTTFixedBuffer_t * pFixedBuffer,
         LogError( ( "Provided buffer is NULL." ) );
         status = MQTTBadParameter;
     }
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "pFixedBuffer->pBuffer cannot be NULL." ) );
+        LogError( ( "pFixedBuffer->tx_pBuffer cannot be NULL." ) );
         status = MQTTBadParameter;
     }
     /* The buffer must be able to fit 4 bytes for the packet. */
-    else if( pFixedBuffer->size < MQTT_PUBLISH_ACK_PACKET_SIZE )
+    else if( pFixedBuffer->tx_size < MQTT_PUBLISH_ACK_PACKET_SIZE )
     {
         LogError( ( "Insufficient memory for packet." ) );
         status = MQTTNoMemory;
@@ -2089,10 +2089,10 @@ MQTTStatus_t MQTT_SerializeAck( const MQTTFixedBuffer_t * pFixedBuffer,
             case MQTT_PACKET_TYPE_PUBREC:
             case MQTT_PACKET_TYPE_PUBREL:
             case MQTT_PACKET_TYPE_PUBCOMP:
-                pFixedBuffer->pBuffer[ 0 ] = packetType;
-                pFixedBuffer->pBuffer[ 1 ] = MQTT_PACKET_SIMPLE_ACK_REMAINING_LENGTH;
-                pFixedBuffer->pBuffer[ 2 ] = UINT16_HIGH_BYTE( packetId );
-                pFixedBuffer->pBuffer[ 3 ] = UINT16_LOW_BYTE( packetId );
+                pFixedBuffer->tx_pBuffer[ 0 ] = packetType;
+                pFixedBuffer->tx_pBuffer[ 1 ] = MQTT_PACKET_SIMPLE_ACK_REMAINING_LENGTH;
+                pFixedBuffer->tx_pBuffer[ 2 ] = UINT16_HIGH_BYTE( packetId );
+                pFixedBuffer->tx_pBuffer[ 3 ] = UINT16_LOW_BYTE( packetId );
                 break;
 
             default:
@@ -2138,9 +2138,9 @@ MQTTStatus_t MQTT_SerializeDisconnect( const MQTTFixedBuffer_t * pFixedBuffer )
         LogError( ( "pFixedBuffer cannot be NULL." ) );
         status = MQTTBadParameter;
     }
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "pFixedBuffer->pBuffer cannot be NULL." ) );
+        LogError( ( "pFixedBuffer->tx_pBuffer cannot be NULL." ) );
         status = MQTTBadParameter;
     }
     else
@@ -2150,11 +2150,11 @@ MQTTStatus_t MQTT_SerializeDisconnect( const MQTTFixedBuffer_t * pFixedBuffer )
 
     if( status == MQTTSuccess )
     {
-        if( pFixedBuffer->size < MQTT_DISCONNECT_PACKET_SIZE )
+        if( pFixedBuffer->tx_size < MQTT_DISCONNECT_PACKET_SIZE )
         {
             LogError( ( "Buffer size of %lu is not sufficient to hold "
                         "serialized DISCONNECT packet of size of %lu.",
-                        ( unsigned long ) pFixedBuffer->size,
+                        ( unsigned long ) pFixedBuffer->tx_size,
                         MQTT_DISCONNECT_PACKET_SIZE ) );
             status = MQTTNoMemory;
         }
@@ -2162,8 +2162,8 @@ MQTTStatus_t MQTT_SerializeDisconnect( const MQTTFixedBuffer_t * pFixedBuffer )
 
     if( status == MQTTSuccess )
     {
-        pFixedBuffer->pBuffer[ 0 ] = MQTT_PACKET_TYPE_DISCONNECT;
-        pFixedBuffer->pBuffer[ 1 ] = MQTT_DISCONNECT_REMAINING_LENGTH;
+        pFixedBuffer->tx_pBuffer[ 0 ] = MQTT_PACKET_TYPE_DISCONNECT;
+        pFixedBuffer->tx_pBuffer[ 1 ] = MQTT_DISCONNECT_REMAINING_LENGTH;
     }
 
     return status;
@@ -2200,9 +2200,9 @@ MQTTStatus_t MQTT_SerializePingreq( const MQTTFixedBuffer_t * pFixedBuffer )
         LogError( ( "pFixedBuffer is NULL." ) );
         status = MQTTBadParameter;
     }
-    else if( pFixedBuffer->pBuffer == NULL )
+    else if( pFixedBuffer->tx_pBuffer == NULL )
     {
-        LogError( ( "pFixedBuffer->pBuffer cannot be NULL." ) );
+        LogError( ( "pFixedBuffer->tx_pBuffer cannot be NULL." ) );
         status = MQTTBadParameter;
     }
     else
@@ -2212,11 +2212,11 @@ MQTTStatus_t MQTT_SerializePingreq( const MQTTFixedBuffer_t * pFixedBuffer )
 
     if( status == MQTTSuccess )
     {
-        if( pFixedBuffer->size < MQTT_PACKET_PINGREQ_SIZE )
+        if( pFixedBuffer->tx_size < MQTT_PACKET_PINGREQ_SIZE )
         {
             LogError( ( "Buffer size of %lu is not sufficient to hold "
                         "serialized PINGREQ packet of size of %lu.",
-                        ( unsigned long ) pFixedBuffer->size,
+                        ( unsigned long ) pFixedBuffer->tx_size,
                         MQTT_PACKET_PINGREQ_SIZE ) );
             status = MQTTNoMemory;
         }
@@ -2225,8 +2225,8 @@ MQTTStatus_t MQTT_SerializePingreq( const MQTTFixedBuffer_t * pFixedBuffer )
     if( status == MQTTSuccess )
     {
         /* Ping request packets are always the same. */
-        pFixedBuffer->pBuffer[ 0 ] = MQTT_PACKET_TYPE_PINGREQ;
-        pFixedBuffer->pBuffer[ 1 ] = 0x00;
+        pFixedBuffer->tx_pBuffer[ 0 ] = MQTT_PACKET_TYPE_PINGREQ;
+        pFixedBuffer->tx_pBuffer[ 1 ] = 0x00;
     }
 
     return status;

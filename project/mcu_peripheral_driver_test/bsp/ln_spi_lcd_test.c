@@ -11,7 +11,7 @@
 
  
 /**
-        SPI LCD测试说明：
+        SPI LCD驱动说明（ST7789S驱动IC）：
         
         1. 接线说明：
                         LN8210              LCD
