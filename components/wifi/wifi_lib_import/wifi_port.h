@@ -64,6 +64,7 @@ int     wlib_str2bytes(uint8_t *bytes, const char *str);
 int     wlib_is_valid_mac_str(const char* mac_str);
 int     wlib_is_valid_mac(const char *mac);
 int     wlib_mac_str2hex(const uint8_t *str, uint8_t *hex);
+void    wlib_get_1f_20_cfg(uint8_t *val_1f, uint8_t *val_20);
 
 /* hmac-sha1 psk */
 void wlib_hmac_sha1(uint8_t  * k,    /* secret key */
@@ -116,7 +117,7 @@ void wlib_aes_encrypt(void *ctx, const uint8_t *ptext, uint8_t *ctext);
 void wlib_aes_decrypt(void *ctx, const uint8_t *ctext, uint8_t *ptext);
 
 /* tx power external compensation */
-void   wlib_get_tx_power_ext_comp_val(int8_t *bgn_pwr, int8_t *b_pwr, int8_t *gn_pwr);
+void wlib_get_tx_power_ext_comp_val(int8_t *bgn_pwr, int8_t *b_pwr, int8_t *gn_pwr, int8_t *b_lmh, int8_t *gn_lmh);
 
 /* heap memory manager */
 void  *wlib_malloc(uint32_t size);

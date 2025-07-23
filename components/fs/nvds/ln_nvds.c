@@ -439,3 +439,35 @@ int ln_nvds_get_tx_power_gn_comp(uint8_t *val) {
     else
         return ln_nvds_read(NV11_TX_POWER_COMP_GN_OFFST, val, NV11_TX_POWER_COMP_GN_LEN);
 }
+
+/* NV12_TX_POWER_COMP_B_L_M_H_FLAG_OFFST, NV12_TX_POWER_COMP_B_L_M_H_FLAG_LEN */
+int    ln_nvds_set_tx_power_b_low_mid_hi_comp(uint8_t  l_val, uint8_t  m_val, uint8_t  h_val, uint8_t  flag) {
+    uint8_t val[NV12_TX_POWER_COMP_B_L_M_H_FLAG_LEN] = {0,};
+    val[0] = l_val; val[1] = m_val; val[2] = h_val; val[3] = flag;
+    return ln_nvds_write(NV12_TX_POWER_COMP_B_L_M_H_FLAG_OFFST, &val[0], sizeof(val));
+}
+
+int    ln_nvds_get_tx_power_b_low_mid_hi_comp(uint8_t *l_val, uint8_t *m_val, uint8_t *h_val, uint8_t *flag) {
+    int ret = NVDS_ERR_OK;
+    uint8_t val[NV12_TX_POWER_COMP_B_L_M_H_FLAG_LEN] = {0,};
+
+    ret = ln_nvds_read(NV12_TX_POWER_COMP_B_L_M_H_FLAG_OFFST, &val[0], sizeof(val));
+    *l_val = val[0]; *m_val = val[1]; *h_val = val[2]; *flag = val[3];
+    return ret;
+}
+
+/* NV13_TX_POWER_COMP_GN_L_M_H_FLAG_OFFST, NV13_TX_POWER_COMP_GN_L_M_H_FLAG_LEN */
+int    ln_nvds_set_tx_power_gn_low_mid_hi_comp(uint8_t  l_val, uint8_t  m_val, uint8_t  h_val, uint8_t  flag) {
+    uint8_t val[NV13_TX_POWER_COMP_GN_L_M_H_FLAG_LEN] = {0,};
+    val[0] = l_val; val[1] = m_val; val[2] = h_val; val[3] = flag;
+    return ln_nvds_write(NV13_TX_POWER_COMP_GN_L_M_H_FLAG_OFFST, &val[0], sizeof(val));
+}
+
+int    ln_nvds_get_tx_power_gn_low_mid_hi_comp(uint8_t *l_val, uint8_t *m_val, uint8_t *h_val, uint8_t *flag) {
+    int ret = NVDS_ERR_OK;
+    uint8_t val[NV13_TX_POWER_COMP_GN_L_M_H_FLAG_LEN] = {0,};
+
+    ret = ln_nvds_read(NV13_TX_POWER_COMP_GN_L_M_H_FLAG_OFFST, &val[0], sizeof(val));
+    *l_val = val[0]; *m_val = val[1]; *h_val = val[2]; *flag = val[3];
+    return ret;
+}

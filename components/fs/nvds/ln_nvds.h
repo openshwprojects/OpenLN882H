@@ -63,8 +63,18 @@
 #define NV11_TX_POWER_COMP_GN_OFFST    (NV10_TX_POWER_COMP_B_OFFST + NV10_TX_POWER_COMP_B_LEN)
 #define NV11_TX_POWER_COMP_GN_LEN      (1)
 
+/* 4 Bytes  byte0:[LOW ch] byte1:[MID ch] byte2:[HIGH ch] byte3:[flag] */
+/* [flag & 0x03]=2: LOW is valid, [(flag>>2) & 0x03]=2: MID is valid, [(flag>>4) & 0x03]=2: HIGH is valid  */
+#define NV12_TX_POWER_COMP_B_L_M_H_FLAG_OFFST    (NV11_TX_POWER_COMP_GN_OFFST + NV11_TX_POWER_COMP_GN_LEN)
+#define NV12_TX_POWER_COMP_B_L_M_H_FLAG_LEN      (4)
+
+/* 4 Bytes  byte0:[LOW ch] byte1:[MID ch] byte2:[HIGH ch] byte3:[flag] */
+/* [flag & 0x03]=2: LOW is valid, [(flag>>2) & 0x03]=2: MID is valid, [(flag>>4) & 0x03]=2: HIGH is valid  */
+#define NV13_TX_POWER_COMP_GN_L_M_H_FLAG_OFFST   (NV12_TX_POWER_COMP_B_L_M_H_FLAG_OFFST + NV12_TX_POWER_COMP_B_L_M_H_FLAG_LEN)
+#define NV13_TX_POWER_COMP_GN_L_M_H_FLAG_LEN     (4)
+
 //If vendor add new macro into the nvds,please update it!
-#if ((NV11_TX_POWER_COMP_GN_OFFST + NV11_TX_POWER_COMP_GN_LEN) > SIZE_4KB)
+#if ((NV13_TX_POWER_COMP_GN_L_M_H_FLAG_OFFST + NV13_TX_POWER_COMP_GN_L_M_H_FLAG_LEN) > SIZE_4KB)
   #error "NVDS area overflow!!!"
 #endif
 
@@ -137,6 +147,12 @@ int    ln_nvds_get_tx_power_b_comp(uint8_t *val);
 
 int    ln_nvds_set_tx_power_gn_comp(uint8_t  val);
 int    ln_nvds_get_tx_power_gn_comp(uint8_t *val);
+
+int    ln_nvds_set_tx_power_b_low_mid_hi_comp(uint8_t  l_val, uint8_t  m_val, uint8_t  h_val, uint8_t  flag);
+int    ln_nvds_get_tx_power_b_low_mid_hi_comp(uint8_t *l_val, uint8_t *m_val, uint8_t *h_val, uint8_t *flag);
+
+int    ln_nvds_set_tx_power_gn_low_mid_hi_comp(uint8_t  l_val, uint8_t  m_val, uint8_t  h_val, uint8_t  flag);
+int    ln_nvds_get_tx_power_gn_low_mid_hi_comp(uint8_t *l_val, uint8_t *m_val, uint8_t *h_val, uint8_t *flag);
 
 /*********************FLASH OPT API***********************************************/
 int    ln_fotp_get_mac_val(uint8_t *val);
